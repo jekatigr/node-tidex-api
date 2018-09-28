@@ -1,0 +1,18 @@
+{
+  "name": "node-tidex-api",
+  "version": "0.1.0",
+  "description": "Node.js module for Tidex exchange api integration.",
+  "main": "index.js",
+  "author": "jekatigr <jekatigr@yandex.ru>",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.5"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}
