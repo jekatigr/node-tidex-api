@@ -15,8 +15,11 @@ const PUBLIC_API_URL = 'https://api.tidex.com/api/3';
 const PRIVATE_API_URL = ' https://api.tidex.com/tapi';
 
 /**
+ * Converts local symbol string to tidex internal market string.
  *
- * @param symbol Market, for example: 'BTC/WEUR';
+ * @param {string} symbol - Market, for example: 'BTC/WEUR'.
+ *
+ * @returns {string} market, for example: 'btc_weur'.
  */
 const convertSymbolToTidexPairString = (symbol) => {
     let s = symbol.split('/');
@@ -78,7 +81,14 @@ module.exports = class TidexApi {
         }
     }
 
-    async _getQueryString(symbols = []) {
+    /**
+     * Returns query string for public requests - part of uri.
+     *
+     * @param symbols {Array.<string>} - Array of symbol strings, for example: ['BTC/USDT', 'BTC/WEUR'].
+     *
+     * @returns {string} Query string, for example: 'btc_usdt-btc_weur'.
+     */
+    async getQueryString(symbols = []) {
         let toConvert = symbols;
         if (toConvert.length === 0) {
             let markets = await this.getMarkets();
@@ -89,6 +99,11 @@ module.exports = class TidexApi {
         return toConvert.join('-');
     }
 
+    /**
+     * Returns available markets. If local markets cache not filled - fetch and save markets.
+     *
+     * @returns {Array.<Market>} - Array with {@Market} objects.
+     */
     async getMarkets() {
         if (!this.markets) {
             const res = await TidexApi.publicRequest('info');
@@ -132,7 +147,7 @@ module.exports = class TidexApi {
      * @returns {Array.<Ticker>} array with tickers.
      */
     async getTickers(symbols = []) {
-        const queryString = await this._getQueryString(symbols);
+        const queryString = await this.getQueryString(symbols);
 
         const source = await TidexApi.publicRequest('ticker', queryString);
 
@@ -170,7 +185,7 @@ module.exports = class TidexApi {
      * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks and bids is: [0] - amount, [1] - price.
      */
     async getOrderBooks({ limit, symbols = [] } = { symbols: [] }) {
-        let queryString = await this._getQueryString(symbols);
+        let queryString = await this.getQueryString(symbols);
 
         if (limit) {
             if (limit > 2000) {
@@ -209,7 +224,7 @@ module.exports = class TidexApi {
      * @returns {Array.<Trades>} - Array of {@Trades} objects.
      */
     async getTrades({ limit, symbols = [] } = { symbols: [] }) {
-        let queryString = await this._getQueryString(symbols);
+        let queryString = await this.getQueryString(symbols);
 
         if (limit) {
             if (limit > 2000) {
