@@ -14,26 +14,6 @@ const Order = require('./models/Order');
 const PUBLIC_API_URL = 'https://api.tidex.com/api/3';
 const PRIVATE_API_URL = ' https://api.tidex.com/tapi';
 
-const get = async (method, queryString = '') => {
-    try {
-        return await request({
-            url: `${PUBLIC_API_URL}/${method}/${queryString}`,
-            headers: {
-                Connection: 'keep-alive'
-            },
-            gzip: true,
-            json: true
-        });
-    } catch (ex) {
-        console.log(`Exception for '${method}' method request, params: ${JSON.stringify(params)}, ex: ${ex}`);
-    }
-};
-
-function sign(key, str) {
-    const hmac = crypto.createHmac("sha512", key);
-    return hmac.update(new Buffer(str, 'utf-8')).digest("hex");
-}
-
 /**
  *
  * @param symbol Market, for example: 'BTC/WEUR';
@@ -51,6 +31,26 @@ module.exports = class TidexApi {
         this.markets = undefined;
     }
 
+    static async publicRequest(method, queryString = '') {
+        try {
+            return await request({
+                url: `${PUBLIC_API_URL}/${method}/${queryString}`,
+                headers: {
+                    Connection: 'keep-alive'
+                },
+                gzip: true,
+                json: true
+            });
+        } catch (ex) {
+            console.log(`Exception for '${method}' method request, params: ${JSON.stringify(params)}, ex: ${ex}`);
+        }
+    };
+
+    static sign(key, str) {
+        const hmac = crypto.createHmac("sha512", key);
+        return hmac.update(new Buffer(str, 'utf-8')).digest("hex");
+    }
+
     async privateRequest(method, params = {}) {
         try {
             const body = {
@@ -60,7 +60,7 @@ module.exports = class TidexApi {
             };
 
             const body_converted = querystring.stringify(body);
-            const signed = sign(this.apiSecret, body_converted);
+            const signed = TidexApi.sign(this.apiSecret, body_converted);
             const res = await request({
                 method: 'POST',
                 url: `${PRIVATE_API_URL}`,
@@ -91,7 +91,7 @@ module.exports = class TidexApi {
 
     async getMarkets() {
         if (!this.markets) {
-            const res = await get('info');
+            const res = await TidexApi.publicRequest('info');
 
             const { pairs } = res;
 
@@ -134,7 +134,7 @@ module.exports = class TidexApi {
     async getTickers(symbols = []) {
         const queryString = await this._getQueryString(symbols);
 
-        const source = await get('ticker', queryString);
+        const source = await TidexApi.publicRequest('ticker', queryString);
 
         const tickers = [];
         for (const key of Object.keys(source)) {
@@ -179,7 +179,7 @@ module.exports = class TidexApi {
             queryString += `?limit=${limit}`;
         }
 
-        const source = await get('depth', queryString);
+        const source = await TidexApi.publicRequest('depth', queryString);
 
         const orderBooks = [];
         for (const key of Object.keys(source)) {
@@ -218,7 +218,7 @@ module.exports = class TidexApi {
             queryString += `?limit=${limit}`;
         }
 
-        const source = await get('trades', queryString);
+        const source = await TidexApi.publicRequest('trades', queryString);
 
         const trades = [];
         for (const key of Object.keys(source)) {
