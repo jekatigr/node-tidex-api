@@ -182,7 +182,7 @@ module.exports = class TidexApi {
      * ].
      * Orderbooks for all available markets will be received in case symbols parameter omitted.
      *
-     * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks and bids is: [0] - amount, [1] - price.
+     * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks and bids is: [0] - price, [1] - amount.
      */
     async getOrderBooks({ limit, symbols = [] } = { symbols: [] }) {
         let queryString = await this.getQueryString(symbols);
