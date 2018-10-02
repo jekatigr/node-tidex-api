@@ -45,7 +45,7 @@ module.exports = class TidexApi {
                 json: true
             });
         } catch (ex) {
-            console.log(`Exception for '${method}' method request, params: ${JSON.stringify(params)}, ex: ${ex}`);
+            console.log(`Exception for '${method}' method request, queryString: ${queryString}, ex: ${ex}`);
         }
     };
 
