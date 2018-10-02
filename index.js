@@ -108,6 +108,10 @@ module.exports = class TidexApi {
         if (!this.markets) {
             const res = await TidexApi.publicRequest('info');
 
+            if (res.hasOwnProperty('success') && source.success === 0) {
+                throw new Error(res.error);
+            }
+
             const { pairs } = res;
 
             const markets = [];
@@ -150,6 +154,10 @@ module.exports = class TidexApi {
         const queryString = await this.getQueryString(symbols);
 
         const source = await TidexApi.publicRequest('ticker', queryString);
+
+        if (source.hasOwnProperty('success') && source.success === 0) {
+            throw new Error(source.error);
+        }
 
         const tickers = [];
         for (const key of Object.keys(source)) {
@@ -196,6 +204,10 @@ module.exports = class TidexApi {
 
         const source = await TidexApi.publicRequest('depth', queryString);
 
+        if (source.hasOwnProperty('success') && source.success === 0) {
+            throw new Error(source.error);
+        }
+
         const orderBooks = [];
         for (const key of Object.keys(source)) {
             const o = source[key];
@@ -207,7 +219,6 @@ module.exports = class TidexApi {
                 bids: o.bids
             }));
         }
-
         return orderBooks;
     }
 
@@ -234,6 +245,10 @@ module.exports = class TidexApi {
         }
 
         const source = await TidexApi.publicRequest('trades', queryString);
+
+        if (source.hasOwnProperty('success') && source.success === 0) {
+            throw new Error(source.error);
+        }
 
         const trades = [];
         for (const key of Object.keys(source)) {
