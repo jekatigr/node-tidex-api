@@ -15,6 +15,24 @@ const PUBLIC_API_URL = 'https://api.tidex.com/api/3';
 const PRIVATE_API_URL = ' https://api.tidex.com/tapi';
 
 /**
+ * Returns query string for public requests - part of uri.
+ *
+ * @param symbols {Array.<string>} - Array of symbol strings, for example: ['BTC/USDT', 'BTC/WEUR'].
+ * @param markets {Array.<Market>} - Array of {@Market}. Optional.
+ *
+ * @returns {string} Query string, for example: 'btc_usdt-btc_weur'.
+ */
+const getQueryString = (symbols = [], markets) => {
+    let toConvert = symbols;
+    if (toConvert.length === 0) {
+        toConvert = markets.map(m => `${m.base}/${m.quote}`);
+    }
+    toConvert = toConvert.map(s => convertSymbolToTidexPairString(s));
+
+    return toConvert.join('-');
+};
+
+/**
  * Converts local symbol string to tidex internal market string.
  *
  * @param {string} symbol - Market, for example: 'BTC/WEUR'.
@@ -26,77 +44,59 @@ const convertSymbolToTidexPairString = (symbol) => {
     return `${s[0].toLowerCase()}_${s[1].toLowerCase()}`;
 };
 
+const publicRequest = async (method, queryString = '') => {
+    try {
+        return await request({
+            url: `${PUBLIC_API_URL}/${method}/${queryString}`,
+            headers: {
+                Connection: 'keep-alive'
+            },
+            gzip: true,
+            json: true
+        });
+    } catch (ex) {
+        console.log(`Exception for '${method}' method request, queryString: ${queryString}, ex: ${ex}`);
+    }
+};
+
+const sign = (key, str) => {
+    const hmac = crypto.createHmac("sha512", key);
+    return hmac.update(new Buffer(str, 'utf-8')).digest("hex");
+};
+
+const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
+    try {
+        const body = {
+            ...params,
+            method,
+            nonce: params.nonce || 1
+        };
+
+        const body_converted = querystring.stringify(body);
+        const signed = sign(apiSecret, body_converted);
+        const res = await request({
+            method: 'POST',
+            url: `${PRIVATE_API_URL}`,
+            headers: {
+                Connection: 'keep-alive',
+                Key: apiKey,
+                Sign: signed
+            },
+            gzip: true,
+            body: body_converted
+        });
+        return JSON.parse(res);
+    } catch (ex) {
+        console.log(`Exception for private method '${method}' request, params: ${JSON.stringify(params)}, ex: ${ex}`);
+    }
+};
+
 module.exports = class TidexApi {
     constructor({ apiKey, apiSecret } = {}) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
 
         this.markets = undefined;
-    }
-
-    static async publicRequest(method, queryString = '') {
-        try {
-            return await request({
-                url: `${PUBLIC_API_URL}/${method}/${queryString}`,
-                headers: {
-                    Connection: 'keep-alive'
-                },
-                gzip: true,
-                json: true
-            });
-        } catch (ex) {
-            console.log(`Exception for '${method}' method request, queryString: ${queryString}, ex: ${ex}`);
-        }
-    };
-
-    static sign(key, str) {
-        const hmac = crypto.createHmac("sha512", key);
-        return hmac.update(new Buffer(str, 'utf-8')).digest("hex");
-    }
-
-    async privateRequest(method, params = {}) {
-        try {
-            const body = {
-                ...params,
-                method,
-                nonce: params.nonce || 1
-            };
-
-            const body_converted = querystring.stringify(body);
-            const signed = TidexApi.sign(this.apiSecret, body_converted);
-            const res = await request({
-                method: 'POST',
-                url: `${PRIVATE_API_URL}`,
-                headers: {
-                    Connection: 'keep-alive',
-                    Key: this.apiKey,
-                    Sign: signed
-                },
-                gzip: true,
-                body: body_converted
-            });
-            return JSON.parse(res);
-        } catch (ex) {
-            console.log(`Exception for private method '${method}' request, params: ${JSON.stringify(params)}, ex: ${ex}`);
-        }
-    }
-
-    /**
-     * Returns query string for public requests - part of uri.
-     *
-     * @param symbols {Array.<string>} - Array of symbol strings, for example: ['BTC/USDT', 'BTC/WEUR'].
-     *
-     * @returns {string} Query string, for example: 'btc_usdt-btc_weur'.
-     */
-    async getQueryString(symbols = []) {
-        let toConvert = symbols;
-        if (toConvert.length === 0) {
-            let markets = await this.getMarkets();
-            toConvert = markets.map(m => `${m.base}/${m.quote}`);
-        }
-        toConvert = toConvert.map(s => convertSymbolToTidexPairString(s));
-
-        return toConvert.join('-');
     }
 
     /**
@@ -106,7 +106,7 @@ module.exports = class TidexApi {
      */
     async getMarkets() {
         if (!this.markets) {
-            const res = await TidexApi.publicRequest('info');
+            const res = await publicRequest('info');
 
             if (res.hasOwnProperty('success') && source.success === 0) {
                 throw new Error(res.error);
@@ -151,9 +151,9 @@ module.exports = class TidexApi {
      * @returns {Array.<Ticker>} array with tickers.
      */
     async getTickers(symbols = []) {
-        const queryString = await this.getQueryString(symbols);
+        const queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
 
-        const source = await TidexApi.publicRequest('ticker', queryString);
+        const source = await publicRequest('ticker', queryString);
 
         if (source.hasOwnProperty('success') && source.success === 0) {
             throw new Error(source.error);
@@ -193,7 +193,7 @@ module.exports = class TidexApi {
      * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks and bids is: [0] - price, [1] - amount.
      */
     async getOrderBooks({ limit, symbols = [] } = { symbols: [] }) {
-        let queryString = await this.getQueryString(symbols);
+        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
 
         if (limit) {
             if (limit > 2000) {
@@ -202,7 +202,7 @@ module.exports = class TidexApi {
             queryString += `?limit=${limit}`;
         }
 
-        const source = await TidexApi.publicRequest('depth', queryString);
+        const source = await publicRequest('depth', queryString);
 
         if (source.hasOwnProperty('success') && source.success === 0) {
             throw new Error(source.error);
@@ -235,7 +235,7 @@ module.exports = class TidexApi {
      * @returns {Array.<Trades>} - Array of {@Trades} objects.
      */
     async getTrades({ limit, symbols = [] } = { symbols: [] }) {
-        let queryString = await this.getQueryString(symbols);
+        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
 
         if (limit) {
             if (limit > 2000) {
@@ -244,7 +244,7 @@ module.exports = class TidexApi {
             queryString += `?limit=${limit}`;
         }
 
-        const source = await TidexApi.publicRequest('trades', queryString);
+        const source = await publicRequest('trades', queryString);
 
         if (source.hasOwnProperty('success') && source.success === 0) {
             throw new Error(source.error);
@@ -282,7 +282,7 @@ module.exports = class TidexApi {
      * @returns {AccountInfo} - information object.
      */
     async getAccountInfo() {
-        const res = await this.privateRequest('getInfo');
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfo');
 
         if (res.success) {
             const funds = res.return.funds;
@@ -313,7 +313,7 @@ module.exports = class TidexApi {
      * @returns {AccountInfo} - information object.
      */
     async getAccountInfoExtended() {
-        const res = await this.privateRequest('getInfoExt');
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfoExt');
 
         if (res.success) {
             const funds = res.return.funds;
@@ -394,7 +394,7 @@ module.exports = class TidexApi {
             throw new Error(`Total should be greater than '${market.minTotal}' for ${symbol} market. Current total: ${ price * amount }`);
         }
 
-        const res = await this.privateRequest('Trade', {
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'Trade', {
             pair: convertSymbolToTidexPairString(symbol),
             type: operation,
             rate: price,
@@ -439,7 +439,7 @@ module.exports = class TidexApi {
         if (symbol) {
             params = { pair: convertSymbolToTidexPairString(symbol) }
         }
-        const res = await this.privateRequest('ActiveOrders', params);
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'ActiveOrders', params);
 
         if (res.success) {
             const orders = res.return;
@@ -477,7 +477,7 @@ module.exports = class TidexApi {
         if (!orderId) {
             throw new Error('Order id is required for getOrder method.');
         }
-        const res = await this.privateRequest('OrderInfo', { order_id: orderId });
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'OrderInfo', { order_id: orderId });
 
         if (res.success) {
             const orderRaw = res.return;
@@ -520,7 +520,7 @@ module.exports = class TidexApi {
         if (!orderId) {
             throw new Error('Order id is required for cancelOrder method.');
         }
-        const res = await this.privateRequest('CancelOrder', { order_id: orderId });
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'CancelOrder', { order_id: orderId });
 
         if (res.success) {
             const funds = res.return.funds;

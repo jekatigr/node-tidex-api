@@ -9,10 +9,6 @@ const Trade = require('../models/Trade');
 const api = new TidexApi();
 
 describe('Tidex API', () => {
-    afterEach(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
-    });
-
     it('should create api instance', () => {
         expect(api).toBeInstanceOf(TidexApi);
     });
@@ -62,6 +58,10 @@ describe('Tidex API', () => {
     });
 
     describe('fetch orderbooks', () => {
+        afterEach(async () => {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        });
+
         it('should not load markets before fetch if symbols provided', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
