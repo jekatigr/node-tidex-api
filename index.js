@@ -219,6 +219,7 @@ module.exports = class TidexApi {
                 bids: o.bids
             }));
         }
+
         return orderBooks;
     }
 
@@ -262,7 +263,8 @@ module.exports = class TidexApi {
                     operation: tr.type === "ask" ? 'sell' : 'buy',
                     amount: tr.amount,
                     price: tr.price,
-                    timestamp: tr.timestamp
+                    timestamp: tr.timestamp,
+                    tradeId: tr.tid
                 }));
             });
 
@@ -461,6 +463,61 @@ module.exports = class TidexApi {
             }
 
             return activeOrders;
+        } else {
+            throw new Error(`Error from exchange, error: '${res.error}'`);
+        }
+    }
+
+    /**
+     * Return account history of trades.
+     *
+     * @param {number} count - The number of trades for display. Optional.
+     * @param {number} fromId - Trade ID, from which the display starts. Optional.
+     * @param {string} symbol - Market, for example: 'LTC/ETH'. Optional.
+     *
+     * @returns {Array.<Trades>} - array of trade history.
+     */
+    async getTradeHistory({count, fromId, symbol} = {}) {
+        let params = {};
+        if (count !== undefined) params.count = count;
+        if (fromId !== undefined) params.from_id = fromId;
+        if (symbol !== undefined) params.pair = convertSymbolToTidexPairString(symbol);
+
+        const res = await privateRequest(this.apiKey, this.apiSecret,'TradeHistory', params);
+
+        if (res.success) {
+            const source = res.return;
+            let tradesOfPair = {};
+            let allPairList = [];
+            for (const key of Object.keys(source)) {
+                let { amount, order_id, pair, rate, timestamp, trade_id, type } = source[key];
+                const trade = new Trade({
+                    operation: type,
+                    amount,
+                    price: rate,
+                    timestamp,
+                    orderId: order_id,
+                    tradeId: trade_id
+                });
+
+                if (allPairList.indexOf(pair) === -1) {
+                    allPairList.push(pair);
+                    tradesOfPair[pair] = [];
+                }
+                tradesOfPair[pair].push(trade);
+            }
+
+            let tradeHistory = [];
+            for (const pair of Object.keys(tradesOfPair)) {
+                const symbol = pair.split('_');
+                const trades = new Trades({
+                    base: symbol[0].toUpperCase(),
+                    quote: symbol[1].toUpperCase(),
+                    trades: tradesOfPair[pair]
+                });
+                tradeHistory.push(trades);
+            }
+            return tradeHistory;
         } else {
             throw new Error(`Error from exchange, error: '${res.error}'`);
         }
