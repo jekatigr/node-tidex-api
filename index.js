@@ -1,5 +1,5 @@
 const request = require('request-promise-native');
-const crypto = require("crypto");
+const crypto = require('crypto');
 const querystring = require('querystring');
 
 const Market = require('./models/Market');
@@ -44,6 +44,14 @@ const convertSymbolToTidexPairString = (symbol) => {
     return `${s[0].toLowerCase()}_${s[1].toLowerCase()}`;
 };
 
+/**
+ * Makes get request to public api.
+ *
+ * @param {string} method - public api method name.
+ * @param {string} queryString - query string, part of uri.
+ *
+ * @returns {Object} Response object.
+ */
 const publicRequest = async (method, queryString = '') => {
     try {
         return await request({
@@ -59,11 +67,29 @@ const publicRequest = async (method, queryString = '') => {
     }
 };
 
+/**
+ * Sign body parameters for private requests.
+ *
+ * @param key - secret key.
+ * @param str - string which will be signed.
+ *
+ * @returns {string} Signed string.
+ */
 const sign = (key, str) => {
     const hmac = crypto.createHmac("sha512", key);
     return hmac.update(new Buffer(str, 'utf-8')).digest("hex");
 };
 
+/**
+ * Makes post request to private api.
+ *
+ * @param {string} apiKey - string with api key.
+ * @param {string} apiSecret - string with api secret.
+ * @param {string} method - private api method name.
+ * @param {Object} params - object with request parameters.
+ *
+ * @returns {Object} Response object.
+ */
 const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
     try {
         const body = {
