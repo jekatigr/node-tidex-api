@@ -49,6 +49,9 @@ const markets = await api.getMarkets();
 
 Returns available markets. Module will serve local cache with markets after first fetch.
 
+
+Example:
+
 ```js
 console.log(await api.getMarkets());
 ```
@@ -105,6 +108,7 @@ Returns tickers for given markets.
 |--- |--- |--- |--- |
 |symbols|Array\<String\>|false|All
 
+
 Example:
 
 ```js
@@ -147,12 +151,13 @@ console.log(await api.getTickers(['ETH/BTC', 'BTC/USDT']));
 
 #### getOrderBooks
 
-Return orderbooks for given markets.
+Returns orderbooks for given markets.
 
 |Param|Type|Required|Default|
 |--- |--- |--- |--- |
 |symbols|Array\<String\>|false|All
 |limit|Number|false|150
+
 
 Example:
 
@@ -188,12 +193,13 @@ Note: each array in asks and bids consist of [0] - price and [1] - amount.
 
 #### getTrades
 
-Return last trades for given markets.
+Returns last trades for given markets.
 
 |Param|Type|Required|Default|
 |--- |--- |--- |--- |
 |symbols|Array\<String\>|false|All
 |limit|Number|false|150
+
 
 Example:
 
@@ -259,7 +265,10 @@ console.log(await api.getTrades({limit: 2, symbols: ['ETH/BTC', 'BTC/USDT']}));
 
 #### getAccountInfo
 
-Return information about account.
+Returns information about account.
+
+
+Example:
 
 ```js
 console.log(await api2.getAccountInfo());
@@ -291,7 +300,10 @@ AccountInfo {
 
 #### getAccountInfoExtended
 
-Return information about account with more detail balances info.
+Returns information about account with more detail balances info.
+
+
+Example:
 
 ```js
 console.log(await api2.getAccountInfoExtended());
@@ -332,6 +344,7 @@ Create limit order.
 |amount|Number|true|
 |operation|String|true|"buy" or "sell"
 
+
 Example:
 
 ```js
@@ -363,6 +376,9 @@ Returns open orders for account.
 |Param|Type|Required|Default|
 |--- |--- |--- |--- |
 |symbol|String|false|All
+
+
+Example:
 
 ```js
 console.log(await api2.getActiveOrders('REM/ETH'));
@@ -399,6 +415,9 @@ Returns account history of trades.
 |fromId|Number|false|value is trade id
 |symbol|String|false|
 
+
+Example:
+
 ```js
 console.log(await api2.getTradeHistory({ symbol: 'REM/ETH' }))
 ```
@@ -430,6 +449,9 @@ Returns order information.
 |--- |--- |--- |
 |orderId|Number|true|
 
+
+Example:
+
 ```js
 console.log(await api2.getOrder(234263388));
 ```
@@ -460,6 +482,9 @@ Order cancellation.
 |Param|Type|Required|
 |--- |--- |--- |
 |orderId|Number|true|
+
+
+Example:
 
 ```js
 console.log(await api2.cancelOrder(235717815));
