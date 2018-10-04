@@ -28,19 +28,19 @@ const markets = await api.getMarkets();
 ### Table of Contents
 
 - [Public REST Endpoints](#public-rest-endpoints)
-    - [getMarkets](#getMarkets)
-    - [getTickers](#getTickers)
-    - [getOrderBooks](#getOrderBooks)
-    - [getTrades](#getTrades)
+    - [getMarkets](#getmarkets)
+    - [getTickers](#gettickers)
+    - [getOrderBooks](#getorderbooks)
+    - [getTrades](#gettrades)
     
 - [Authenticated REST Endpoints](#authenticated-rest-endpoints)
-    - [getAccountInfo](#getAccountInfo)
-    - [getAccountInfoExtended](#getAccountInfoExtended)
-    - [limitOrder](#limitOrder)
-    - [getActiveOrders](#getActiveOrders)
-    - [getTradeHistory](#getTradeHistory)
-    - [getOrder](#getOrder)
-    - [cancelOrder](#cancelOrder)
+    - [getAccountInfo](#getaccountinfo)
+    - [getAccountInfoExtended](#getaccountinfoextended)
+    - [limitOrder](#limitorder)
+    - [getActiveOrders](#getactiveorders)
+    - [getTradeHistory](#gettradehistory)
+    - [getOrder](#getorder)
+    - [cancelOrder](#cancelorder)
     
 
 ### Public REST Endpoints
@@ -253,6 +253,8 @@ console.log(await api.getTrades({limit: 2, symbols: ['ETH/BTC', 'BTC/USDT']}));
  ]
 ```
 
+</details>
+
 ### Authenticated REST Endpoints
 
 #### getAccountInfo
@@ -352,6 +354,7 @@ Order {
     status: 'active'
 }
 ```
+</details>
 
 #### getActiveOrders
 
