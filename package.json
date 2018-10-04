@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "Node.js module for Tidex exchange api integration.",
   "main": "index.js",
-  "author": "jekatigr <jekatigr@yandex.ru>",
-  "license": "MIT",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
@@ -12,7 +13,12 @@
   "devDependencies": {
     "jest": "^23.6.0"
   },
-  "scripts": {
-    "test": "jest"
-  }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jekatigr/node-tidex-api.git"
+  },
+  "keywords": ["tidex", "api", "integration", "cryptoexchange"],
+  "author": "jekatigr <jekatigr@yandex.ru>",
+  "license": "MIT",
+  "homepage": "https://github.com/jekatigr/node-tidex-api"
 }

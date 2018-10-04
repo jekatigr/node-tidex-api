@@ -166,7 +166,7 @@ module.exports = class TidexApi {
     }
 
     /**
-     * Return tickers for given markets.
+     * Returns tickers for given markets.
      *
      * @param symbols Array of markets, for example: [
      *      ETH/BTC,
@@ -455,7 +455,7 @@ module.exports = class TidexApi {
     }
 
     /**
-     * Return open orders for account.
+     * Returns open orders for account.
      *
      * @param {string} symbol - Market, for example: 'LTC/ETH'.
      * All open orders will be received in case symbol parameter omitted.
@@ -495,7 +495,7 @@ module.exports = class TidexApi {
     }
 
     /**
-     * Return account history of trades.
+     * Returns account history of trades.
      *
      * @param {number} count - The number of trades for display. Optional.
      * @param {number} fromId - Trade ID, from which the display starts. Optional.
@@ -550,7 +550,7 @@ module.exports = class TidexApi {
     }
 
     /**
-     * Return order information.
+     * Returns order information.
      *
      * @param {number} orderId - order id.
      *
@@ -597,7 +597,7 @@ module.exports = class TidexApi {
      *
      * @param {number} orderId - order id.
      *
-     * @returns {Array.<Balance>} - array of Balance objects updated after order cancellation
+     * @returns {Array.<Balance>} - array of {@Balance} objects updated after order cancellation
      */
     async cancelOrder(orderId) {
         if (!orderId) {
