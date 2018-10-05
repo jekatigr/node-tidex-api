@@ -63,7 +63,7 @@ const publicRequest = async (method, queryString = '') => {
             json: true
         });
     } catch (ex) {
-        console.log(`Exception for '${method}' method request, queryString: ${queryString}, ex: ${ex}`);
+        throw new Error(`Exception for '${method}' method request, queryString: ${queryString}, ex: ${ex}`);
     }
 };
 
@@ -113,7 +113,7 @@ const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
         });
         return JSON.parse(res);
     } catch (ex) {
-        console.log(`Exception for private method '${method}' request, params: ${JSON.stringify(params)}, ex: ${ex}`);
+        throw new Error(`Exception for private method '${method}' request, params: ${JSON.stringify(params)}, ex: ${ex}`);
     }
 };
 
@@ -134,7 +134,7 @@ module.exports = class TidexApi {
         if (!this.markets) {
             const res = await publicRequest('info');
 
-            if (res.hasOwnProperty('success') && source.success === 0) {
+            if (res.hasOwnProperty('success') && res.success === 0) {
                 throw new Error(res.error);
             }
 
