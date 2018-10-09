@@ -197,8 +197,6 @@ console.log(await api.getOrderBooks({limit: 2, symbols: ['ETH/BTC', 'BTC/USDT']}
 ]
 ```
 
-Note: each array in asks and bids consist of [0] - price and [1] - amount.
-
 </details>
 
 #### getTrades
