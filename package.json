@@ -1,6 +1,6 @@
 {
   "name": "node-tidex-api",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "Node.js module for Tidex exchange api integration.",
   "main": "index.js",
   "scripts": {

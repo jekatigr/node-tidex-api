@@ -5,6 +5,8 @@ const querystring = require('querystring');
 const Market = require('./models/Market');
 const Ticker = require('./models/Ticker');
 const OrderBook = require('./models/OrderBook');
+const Ask = require('./models/Ask');
+const Bid = require('./models/Bid');
 const Trades = require('./models/Trades');
 const Trade = require('./models/Trade');
 const AccountInfo = require('./models/AccountInfo');
@@ -118,7 +120,7 @@ const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
 };
 
 module.exports = class TidexApi {
-    constructor({ apiKey, apiSecret } = {}) {
+    constructor({ apiKey = undefined, apiSecret = undefined } = {}) {
         this.apiKey = apiKey;
         this.apiSecret = apiSecret;
 
@@ -216,9 +218,9 @@ module.exports = class TidexApi {
      * ].
      * Orderbooks for all available markets will be received in case symbols parameter omitted.
      *
-     * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks and bids is: [0] - price, [1] - amount.
+     * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks array - {@Ask}, in bids - {@Bid}.
      */
-    async getOrderBooks({ limit, symbols = [] } = { symbols: [] }) {
+    async getOrderBooks({ limit = undefined, symbols = [] } = { symbols: [] }) {
         let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
 
         if (limit) {
@@ -238,11 +240,15 @@ module.exports = class TidexApi {
         for (const key of Object.keys(source)) {
             const o = source[key];
             const symbol = key.split('_');
+
+            const asks = (o.asks || []).map(a => new Ask({price: a[0], amount: a[1]}));
+            const bids = (o.bids || []).map(b => new Bid({price: b[0], amount: b[1]}));
+
             orderBooks.push(new OrderBook({
                 base: symbol[0].toUpperCase(),
                 quote: symbol[1].toUpperCase(),
-                asks: o.asks,
-                bids: o.bids
+                asks,
+                bids
             }));
         }
 
@@ -261,7 +267,7 @@ module.exports = class TidexApi {
      *
      * @returns {Array.<Trades>} - Array of {@Trades} objects.
      */
-    async getTrades({ limit, symbols = [] } = { symbols: [] }) {
+    async getTrades({ limit = undefined, symbols = [] } = { symbols: [] }) {
         let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
 
         if (limit) {
@@ -503,7 +509,7 @@ module.exports = class TidexApi {
      *
      * @returns {Array.<Trades>} - array of trade history.
      */
-    async getTradeHistory({count, fromId, symbol} = {}) {
+    async getTradeHistory({ count = undefined, fromId = undefined, symbol = undefined } = {}) {
         let params = {};
         if (count !== undefined) params.count = count;
         if (fromId !== undefined) params.from_id = fromId;

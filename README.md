@@ -174,17 +174,27 @@ console.log(await api.getOrderBooks({limit: 2, symbols: ['ETH/BTC', 'BTC/USDT']}
     OrderBook {
         base: 'ETH',
         quote: 'BTC',
-        asks: [ [ 0.03421538, 3.22700463 ], [ 0.03428734, 0.343 ] ],
-        bids: [ [ 0.03389063, 19.8 ], [ 0.03389053, 2.50123261 ] ] 
-    },
-    OrderBook {
+        asks: [
+            Ask { price: 0.0344287, amount: 0.00416927 },
+            Ask { price: 0.03442871, amount: 0.36306581 } 
+        ],
+        bids: [
+            Bid { price: 0.03429006, amount: 19.8 },
+            Bid { price: 0.03428996, amount: 2.50125062 } 
+        ] 
+    }, OrderBook {
         base: 'BTC',
         quote: 'USDT',
-        asks: [ [ 6605.53606, 0.00045055 ], [ 6816.1176, 0.00017 ] ],
-        bids: [ [ 6490.00000001, 0.1001001 ], [ 6490, 0.0028522 ] ] 
-    }
-        
- ]
+        asks: [ 
+            Ask { price: 6635.13857705, amount: 0.00108004 },
+            Ask { price: 6648.42847346, amount: 0.030436 } 
+        ],
+        bids: [ 
+            Bid { price: 6550.15, amount: 0.00013106 },
+            Bid { price: 6490.00000001, amount: 0.1001001 } 
+        ] 
+    } 
+]
 ```
 
 Note: each array in asks and bids consist of [0] - price and [1] - amount.
