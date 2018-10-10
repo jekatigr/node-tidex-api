@@ -5,13 +5,18 @@
   "main": "index.js",
   "scripts": {
     "integration-tests": "jest .__tests__/integration.js",
-    "unit-tests": "jest ./__tests__/unit.js"
+    "unit-tests": "jest ./__tests__/unit.js",
+    "lint": "./node_modules/.bin/eslint ./"
   },
   "dependencies": {
     "request": "^2.88.0",
     "request-promise-native": "^1.0.5"
   },
   "devDependencies": {
+    "eslint": "^5.6.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jest": "^21.24.1",
     "jest": "^23.6.0"
   },
   "repository": {
