@@ -211,8 +211,8 @@ module.exports = class TidexApi {
     /**
      * Return orderbooks for given markets.
      *
-     * @param {number} limit - number of order positions in asks & bids, max = 2000, default = 150
-     * @param {Array.<string>} symbols - Array of markets, for example: [
+     * @param {number} limit - Optional. Number of order positions in asks & bids, max = 2000, default = 150
+     * @param {Array.<string>} symbols - Optional. Array of markets, for example: [
      *      ETH/BTC,
      *      BTC/WEUR
      * ].
