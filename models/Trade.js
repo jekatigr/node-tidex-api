@@ -5,6 +5,6 @@ module.exports = class Trade {
         this.price = price;
         this.timestamp = timestamp;
         this.orderId = orderId;
-        this.tradeId = tradeId
+        this.tradeId = tradeId;
     }
 };

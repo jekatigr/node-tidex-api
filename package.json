@@ -4,7 +4,7 @@
   "description": "Node.js module for Tidex exchange api integration.",
   "main": "index.js",
   "scripts": {
-    "integration-tests": "jest .__tests__/integration.js",
+    "integration-tests": "jest ./__tests__/integration.js",
     "unit-tests": "jest ./__tests__/unit.js",
     "lint": "./node_modules/.bin/eslint ./"
   },

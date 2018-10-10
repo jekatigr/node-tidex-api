@@ -16,6 +16,19 @@ const Order = require('./models/Order');
 const PUBLIC_API_URL = 'https://api.tidex.com/api/3';
 const PRIVATE_API_URL = ' https://api.tidex.com/tapi';
 
+
+/**
+ * Converts local symbol string to tidex internal market string.
+ *
+ * @param {string} symbol - Market, for example: 'BTC/WEUR'.
+ *
+ * @returns {string} market, for example: 'btc_weur'.
+ */
+const convertSymbolToTidexPairString = (symbol) => {
+    const s = symbol.split('/');
+    return `${s[0].toLowerCase()}_${s[1].toLowerCase()}`;
+};
+
 /**
  * Returns query string for public requests - part of uri.
  *
@@ -32,18 +45,6 @@ const getQueryString = (symbols = [], markets) => {
     toConvert = toConvert.map(s => convertSymbolToTidexPairString(s));
 
     return toConvert.join('-');
-};
-
-/**
- * Converts local symbol string to tidex internal market string.
- *
- * @param {string} symbol - Market, for example: 'BTC/WEUR'.
- *
- * @returns {string} market, for example: 'btc_weur'.
- */
-const convertSymbolToTidexPairString = (symbol) => {
-    let s = symbol.split('/');
-    return `${s[0].toLowerCase()}_${s[1].toLowerCase()}`;
 };
 
 /**
@@ -78,8 +79,8 @@ const publicRequest = async (method, queryString = '') => {
  * @returns {string} Signed string.
  */
 const sign = (key, str) => {
-    const hmac = crypto.createHmac("sha512", key);
-    return hmac.update(new Buffer(str, 'utf-8')).digest("hex");
+    const hmac = crypto.createHmac('sha512', key);
+    return hmac.update(Buffer.from(str, 'utf-8')).digest('hex');
 };
 
 /**
@@ -100,8 +101,8 @@ const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
             nonce: params.nonce || 1
         };
 
-        const body_converted = querystring.stringify(body);
-        const signed = sign(apiSecret, body_converted);
+        const bodyConverted = querystring.stringify(body);
+        const signed = sign(apiSecret, bodyConverted);
         const res = await request({
             method: 'POST',
             url: `${PRIVATE_API_URL}`,
@@ -111,7 +112,7 @@ const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
                 Sign: signed
             },
             gzip: true,
-            body: body_converted
+            body: bodyConverted
         });
         return JSON.parse(res);
     } catch (ex) {
@@ -136,7 +137,7 @@ module.exports = class TidexApi {
         if (!this.markets) {
             const res = await publicRequest('info');
 
-            if (res.hasOwnProperty('success') && res.success === 0) {
+            if (Object.prototype.hasOwnProperty.call(res, 'success') && res.success === 0) {
                 throw new Error(res.error);
             }
 
@@ -179,11 +180,11 @@ module.exports = class TidexApi {
      * @returns {Array.<Ticker>} array with tickers.
      */
     async getTickers(symbols = []) {
-        const queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
+        const queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets() : undefined);
 
         const source = await publicRequest('ticker', queryString);
 
-        if (source.hasOwnProperty('success') && source.success === 0) {
+        if (Object.prototype.hasOwnProperty.call(source, 'success') && source.success === 0) {
             throw new Error(source.error);
         }
 
@@ -218,10 +219,11 @@ module.exports = class TidexApi {
      * ].
      * Orderbooks for all available markets will be received in case symbols parameter omitted.
      *
-     * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects, each element in asks array - {@Ask}, in bids - {@Bid}.
+     * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects,
+     * each element in asks array - {@Ask}, in bids - {@Bid}.
      */
     async getOrderBooks({ limit = undefined, symbols = [] } = { symbols: [] }) {
-        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
+        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets() : undefined);
 
         if (limit) {
             if (limit > 2000) {
@@ -232,7 +234,7 @@ module.exports = class TidexApi {
 
         const source = await publicRequest('depth', queryString);
 
-        if (source.hasOwnProperty('success') && source.success === 0) {
+        if (Object.prototype.hasOwnProperty.call(source, 'success') && source.success === 0) {
             throw new Error(source.error);
         }
 
@@ -241,8 +243,8 @@ module.exports = class TidexApi {
             const o = source[key];
             const symbol = key.split('_');
 
-            const asks = (o.asks || []).map(a => new Ask({price: a[0], amount: a[1]}));
-            const bids = (o.bids || []).map(b => new Bid({price: b[0], amount: b[1]}));
+            const asks = (o.asks || []).map(a => new Ask({ price: a[0], amount: a[1] }));
+            const bids = (o.bids || []).map(b => new Bid({ price: b[0], amount: b[1] }));
 
             orderBooks.push(new OrderBook({
                 base: symbol[0].toUpperCase(),
@@ -268,7 +270,7 @@ module.exports = class TidexApi {
      * @returns {Array.<Trades>} - Array of {@Trades} objects.
      */
     async getTrades({ limit = undefined, symbols = [] } = { symbols: [] }) {
-        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets(): undefined);
+        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets() : undefined);
 
         if (limit) {
             if (limit > 2000) {
@@ -279,7 +281,7 @@ module.exports = class TidexApi {
 
         const source = await publicRequest('trades', queryString);
 
-        if (source.hasOwnProperty('success') && source.success === 0) {
+        if (Object.prototype.hasOwnProperty.call(source, 'success') && source.success === 0) {
             throw new Error(source.error);
         }
 
@@ -290,9 +292,9 @@ module.exports = class TidexApi {
 
             const tradesArray = [];
 
-            t.forEach(tr => {
+            t.forEach((tr) => {
                 tradesArray.push(new Trade({
-                    operation: tr.type === "ask" ? 'sell' : 'buy',
+                    operation: tr.type === 'ask' ? 'sell' : 'buy',
                     amount: tr.amount,
                     price: tr.price,
                     timestamp: tr.timestamp,
@@ -319,7 +321,7 @@ module.exports = class TidexApi {
         const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfo');
 
         if (res.success) {
-            const funds = res.return.funds;
+            const { funds } = res.return;
             const balances = [];
 
             for (const key of Object.keys(funds)) {
@@ -336,9 +338,9 @@ module.exports = class TidexApi {
                 openOrdersCount: res.return.open_orders,
                 rights: res.return.rights
             });
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 
     /**
@@ -350,7 +352,7 @@ module.exports = class TidexApi {
         const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfoExt');
 
         if (res.success) {
-            const funds = res.return.funds;
+            const { funds } = res.return;
             const balances = [];
 
             for (const key of Object.keys(funds)) {
@@ -369,9 +371,9 @@ module.exports = class TidexApi {
                 openOrdersCount: res.return.open_orders,
                 rights: res.return.rights
             });
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 
     /**
@@ -399,7 +401,7 @@ module.exports = class TidexApi {
         }
 
         if (operation !== 'buy' && operation !== 'sell') {
-            throw new Error(`Operation should be 'buy' or 'sell'.`);
+            throw new Error('Operation should be "buy" or "sell".');
         }
 
         if (!price) {
@@ -425,7 +427,7 @@ module.exports = class TidexApi {
         }
 
         if (price * amount < market.minTotal) {
-            throw new Error(`Total should be greater than '${market.minTotal}' for ${symbol} market. Current total: ${ price * amount }`);
+            throw new Error(`Total should be greater than '${market.minTotal}' for ${symbol} market. Current total: ${price * amount}`);
         }
 
         const res = await privateRequest(this.apiKey, this.apiSecret, 'Trade', {
@@ -437,15 +439,15 @@ module.exports = class TidexApi {
 
         if (res.success) {
             const orderRaw = res.return;
-            const { init_order_id, order_id, received, remains } = orderRaw;
+            const { init_order_id: initOrderId, order_id: orderId, received, remains } = orderRaw;
 
             let status = 'active';
-            if (order_id === 0 || remains === 0) {
+            if (orderId === 0 || remains === 0) {
                 status = 'closed';
             }
 
             return new Order({
-                id: init_order_id,
+                id: initOrderId,
                 base,
                 quote,
                 operation,
@@ -455,9 +457,9 @@ module.exports = class TidexApi {
                 created: +(+new Date() / 1000).toFixed(0),
                 status
             });
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 
     /**
@@ -471,7 +473,7 @@ module.exports = class TidexApi {
     async getActiveOrders(symbol) {
         let params;
         if (symbol) {
-            params = { pair: convertSymbolToTidexPairString(symbol) }
+            params = { pair: convertSymbolToTidexPairString(symbol) };
         }
         const res = await privateRequest(this.apiKey, this.apiSecret, 'ActiveOrders', params);
 
@@ -480,24 +482,24 @@ module.exports = class TidexApi {
             const activeOrders = [];
 
             for (const key of Object.keys(orders)) {
-                const { pair, type, amount, rate, timestamp_created } = orders[key];
-                const symbol = pair.split('_');
+                const { pair, type, amount, rate, timestamp_created: timestampCreated } = orders[key];
+                const symbolReceived = pair.split('_');
                 activeOrders.push(new Order({
                     id: +key,
-                    base: symbol[0].toUpperCase(),
-                    quote: symbol[1].toUpperCase(),
+                    base: symbolReceived[0].toUpperCase(),
+                    quote: symbolReceived[1].toUpperCase(),
                     operation: type,
                     amount,
                     price: rate,
-                    created: timestamp_created,
+                    created: timestampCreated,
                     status: 'active'
                 }));
             }
 
             return activeOrders;
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 
     /**
@@ -510,26 +512,26 @@ module.exports = class TidexApi {
      * @returns {Array.<Trades>} - array of trade history.
      */
     async getTradeHistory({ count = undefined, fromId = undefined, symbol = undefined } = {}) {
-        let params = {};
+        const params = {};
         if (count !== undefined) params.count = count;
         if (fromId !== undefined) params.from_id = fromId;
         if (symbol !== undefined) params.pair = convertSymbolToTidexPairString(symbol);
 
-        const res = await privateRequest(this.apiKey, this.apiSecret,'TradeHistory', params);
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'TradeHistory', params);
 
         if (res.success) {
             const source = res.return;
-            let tradesOfPair = {};
-            let allPairList = [];
+            const tradesOfPair = {};
+            const allPairList = [];
             for (const key of Object.keys(source)) {
-                let { amount, order_id, pair, rate, timestamp, trade_id, type } = source[key];
+                const { amount, order_id: orderId, pair, rate, timestamp, trade_id: tradeId, type } = source[key];
                 const trade = new Trade({
                     operation: type,
                     amount,
                     price: rate,
                     timestamp,
-                    orderId: order_id,
-                    tradeId: trade_id
+                    orderId,
+                    tradeId
                 });
 
                 if (allPairList.indexOf(pair) === -1) {
@@ -539,20 +541,20 @@ module.exports = class TidexApi {
                 tradesOfPair[pair].push(trade);
             }
 
-            let tradeHistory = [];
+            const tradeHistory = [];
             for (const pair of Object.keys(tradesOfPair)) {
-                const symbol = pair.split('_');
+                const symbolReceived = pair.split('_');
                 const trades = new Trades({
-                    base: symbol[0].toUpperCase(),
-                    quote: symbol[1].toUpperCase(),
+                    base: symbolReceived[0].toUpperCase(),
+                    quote: symbolReceived[1].toUpperCase(),
                     trades: tradesOfPair[pair]
                 });
                 tradeHistory.push(trades);
             }
             return tradeHistory;
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 
     /**
@@ -570,8 +572,16 @@ module.exports = class TidexApi {
 
         if (res.success) {
             const orderRaw = res.return;
-            const [ id ] = Object.keys(orderRaw);
-            const { pair, type, start_amount, amount, rate, timestamp_created, status } = orderRaw[id];
+            const [id] = Object.keys(orderRaw);
+            const {
+                pair,
+                type,
+                start_amount: startAmount,
+                amount,
+                rate,
+                timestamp_created: timestampCreated,
+                status
+            } = orderRaw[id];
 
             let statusStr;
             switch (status) {
@@ -579,6 +589,7 @@ module.exports = class TidexApi {
                 case 1: { statusStr = 'closed'; break; }
                 case 2: { statusStr = 'cancelled'; break; }
                 case 3: { statusStr = 'cancelled_partially'; break; }
+                default: { statusStr = undefined; break; }
             }
 
             const symbol = pair.split('_');
@@ -587,15 +598,15 @@ module.exports = class TidexApi {
                 base: symbol[0].toUpperCase(),
                 quote: symbol[1].toUpperCase(),
                 operation: type,
-                amount: start_amount,
+                amount: startAmount,
                 remain: amount,
                 price: rate,
-                created: timestamp_created,
+                created: timestampCreated,
                 status: statusStr
             });
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 
     /**
@@ -612,7 +623,7 @@ module.exports = class TidexApi {
         const res = await privateRequest(this.apiKey, this.apiSecret, 'CancelOrder', { order_id: orderId });
 
         if (res.success) {
-            const funds = res.return.funds;
+            const { funds } = res.return;
             const balances = [];
 
             for (const key of Object.keys(funds)) {
@@ -625,8 +636,8 @@ module.exports = class TidexApi {
             }
 
             return balances;
-        } else {
-            throw new Error(`Error from exchange, error: '${res.error}'`);
         }
+
+        throw new Error(`Error from exchange, error: '${res.error}'`);
     }
 };
