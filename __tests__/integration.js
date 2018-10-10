@@ -27,14 +27,14 @@ describe('Tidex API', () => {
         it('should not load markets before fetch if symbols provided', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
-            const tickers = await api.getTickers([ 'BCH/ETH' ]);
+            await api.getTickers(['BCH/ETH']);
             expect(api.markets).toBeUndefined();
         });
 
         it('should load markets before fetch', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
-            const tickers = await api.getTickers();
+            await api.getTickers();
             expect(api.markets).toBeInstanceOf(Array);
             api.markets.forEach(m => expect(m).toBeInstanceOf(Market));
         });
@@ -65,14 +65,14 @@ describe('Tidex API', () => {
         it('should not load markets before fetch if symbols provided', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
-            const tickers = await api.getOrderBooks({ symbols: [ 'BCH/ETH' ] });
+            await api.getOrderBooks({ symbols: ['BCH/ETH'] });
             expect(api.markets).toBeUndefined();
         });
 
         it('should load markets before fetch', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
-            const orderbooks = await api.getOrderBooks();
+            await api.getOrderBooks();
             expect(api.markets).toBeInstanceOf(Array);
             expect(api.markets.length).toBeGreaterThan(0);
             api.markets.forEach(m => expect(m).toBeInstanceOf(Market));
@@ -110,7 +110,7 @@ describe('Tidex API', () => {
             const orderbooks = await api.getOrderBooks({ limit: 5, symbols });
             expect(orderbooks).toBeInstanceOf(Array);
             expect(orderbooks).toHaveLength(2);
-            orderbooks.forEach(o => {
+            orderbooks.forEach((o) => {
                 expect(o).toBeInstanceOf(OrderBook);
                 expect(o.bids).toBeInstanceOf(Array);
                 expect(o.asks).toBeInstanceOf(Array);
@@ -124,14 +124,14 @@ describe('Tidex API', () => {
         it('should not load markets before fetch if symbols provided', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
-            const tickers = await api.getTrades({ symbols: [ 'BCH/ETH' ] });
+            await api.getTrades({ symbols: ['BCH/ETH'] });
             expect(api.markets).toBeUndefined();
         });
 
         it('should load markets before fetch', async () => {
             api.markets = undefined;
             expect(api.markets).toBeUndefined();
-            const trades = await api.getTrades();
+            await api.getTrades();
             expect(api.markets).toBeInstanceOf(Array);
             expect(api.markets.length).toBeGreaterThan(0);
             api.markets.forEach(m => expect(m).toBeInstanceOf(Market));
@@ -141,7 +141,7 @@ describe('Tidex API', () => {
             const trades = await api.getTrades();
             expect(trades).toBeInstanceOf(Array);
             expect(trades.length).toBeGreaterThan(0);
-            trades.forEach(o => {
+            trades.forEach((o) => {
                 expect(o).toBeInstanceOf(Trades);
                 expect(o.trades).toBeInstanceOf(Array);
                 o.trades.forEach(t => expect(t).toBeInstanceOf(Trade));
@@ -155,7 +155,7 @@ describe('Tidex API', () => {
             const trades = await api.getTrades({ symbols });
             expect(trades).toBeInstanceOf(Array);
             expect(trades).toHaveLength(3);
-            trades.forEach(o => {
+            trades.forEach((o) => {
                 expect(o).toBeInstanceOf(Trades);
                 expect(o.trades).toBeInstanceOf(Array);
                 o.trades.forEach(t => expect(t).toBeInstanceOf(Trade));
@@ -177,7 +177,7 @@ describe('Tidex API', () => {
             const trades = await api.getTrades({ limit: 5, symbols });
             expect(trades).toBeInstanceOf(Array);
             expect(trades).toHaveLength(2);
-            trades.forEach(o => {
+            trades.forEach((o) => {
                 expect(o).toBeInstanceOf(Trades);
                 expect(o.trades).toBeInstanceOf(Array);
                 expect(o.trades.length).toBeLessThanOrEqual(5);
@@ -186,22 +186,3 @@ describe('Tidex API', () => {
         });
     });
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

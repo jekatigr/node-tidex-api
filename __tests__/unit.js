@@ -1,7 +1,7 @@
 jest.mock('request-promise-native');
 
+const request = require('request-promise-native');
 const TidexApi = require('../index');
-let request = require('request-promise-native');
 
 const Market = require('../models/Market');
 
@@ -9,7 +9,7 @@ const data = require('./testData');
 
 const api = new TidexApi();
 
-function mockRequest(isResolve,response) {
+function mockRequest(isResolve, response) {
     if (isResolve) {
         request.mockImplementation(async () => Promise.resolve(response));
     } else {
@@ -19,14 +19,14 @@ function mockRequest(isResolve,response) {
 
 describe('Tidex', () => {
     afterEach(() => {
-        request.mockRestore()
+        request.mockRestore();
     });
 
     describe('public api methods', () => {
         describe('getMarkets', () => {
             const { getMarketsTest } = data;
             it('should reject with connection error from request', async () => {
-                let {
+                const {
                     case1: {
                         source,
                         expected
@@ -40,7 +40,7 @@ describe('Tidex', () => {
             });
 
             it('should throw error from exchange (success: 0)', async () => {
-                let {
+                const {
                     case2: {
                         source,
                         expected
@@ -54,7 +54,7 @@ describe('Tidex', () => {
             });
 
             it('should return markets with given data and not call request', async () => {
-                let {
+                const {
                     case3: {
                         markets
                     }
@@ -69,7 +69,7 @@ describe('Tidex', () => {
             });
 
             it('should return markets with given data and call request', async () => {
-                let {
+                const {
                     case4: {
                         source,
                         expected
@@ -86,7 +86,7 @@ describe('Tidex', () => {
             });
 
             it('should not return hidden markets', async () => {
-                let {
+                const {
                     case5: {
                         source,
                         expected
@@ -105,7 +105,7 @@ describe('Tidex', () => {
         describe('getTickers', () => {
             const { getTickersTest } = data;
             it('should reject with connection error from request', async () => {
-                let {
+                const {
                     case1: {
                         source,
                         expected
@@ -114,11 +114,11 @@ describe('Tidex', () => {
 
                 mockRequest(false, source);
 
-                await expect(api.getTickers([ 'BCH/ETH' ])).rejects.toThrowError(expected);
+                await expect(api.getTickers(['BCH/ETH'])).rejects.toThrowError(expected);
             });
 
             it('should throw error from exchange (success: 0)', async () => {
-                let {
+                const {
                     case2: {
                         source,
                         expected
@@ -127,11 +127,11 @@ describe('Tidex', () => {
 
                 mockRequest(true, source);
 
-                await expect(api.getTickers([ 'BCH/ETH' ])).rejects.toThrowError(expected);
+                await expect(api.getTickers(['BCH/ETH'])).rejects.toThrowError(expected);
             });
 
             it('should return tickers and do not call getMarkets', async () => {
-                let {
+                const {
                     case4: {
                         source,
                         expected
@@ -147,7 +147,7 @@ describe('Tidex', () => {
             });
 
             it('should call getMarkets with empty symbols parameter', async () => {
-                let {
+                const {
                     case5: {
                         sourceForMarkets,
                         sourceForTickers,
@@ -171,7 +171,7 @@ describe('Tidex', () => {
             const { getOrderBooksTest } = data;
             it('should do not call method getMarkets()', async () => {
                 const spy = jest.spyOn(api, 'getMarkets');
-                let {
+                const {
                     case1: {
                         source
                     }
@@ -179,9 +179,9 @@ describe('Tidex', () => {
 
                 mockRequest(true, source);
 
-                await api.getOrderBooks({symbols: ['ETH/BTC']});
+                await api.getOrderBooks({ symbols: ['ETH/BTC'] });
                 expect(spy).not.toHaveBeenCalled();
-            })
-        })
+            });
+        });
     });
 });
