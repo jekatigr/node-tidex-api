@@ -312,7 +312,81 @@ module.exports = {
                         [ 102.83, 0.07832332 ]
                     ]
                 }
-            }
+            },
+            expected: [
+                { asks:
+                        [
+                            { amount: 0.01, price: 103.426 },
+                            { amount: 15, price: 103.5 },
+                            { amount: 0.425, price: 103.504 },
+                            { amount: 0.1, price: 103.505 }
+                        ],
+                base: 'ETH',
+                bids:
+                        [
+                            { amount: 2.48502251, price: 103.2 },
+                            { amount: 0.46540304, price: 103.082 },
+                            { amount: 0.99007913, price: 102.91 },
+                            { amount: 0.07832332, price: 102.83 }
+                        ],
+                quote: 'BTC' }
+            ]
+        },
+        case3: {
+            sourceForMarkets: [
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 3,
+                    fee: 0.2,
+                    minPrice: 0.1,
+                    minAmount: 0.01,
+                    maxPrice: 400,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ],
+            sourceForOrderBooks: {
+                eth_btc: {
+                    asks: [
+                        [ 103.426, 0.01 ],
+                        [ 103.5, 15 ],
+                        [ 103.504, 0.425 ],
+                        [ 103.505, 0.1 ]
+                    ],
+                    bids: [
+                        [ 103.2, 2.48502251 ],
+                        [ 103.082, 0.46540304 ],
+                        [ 102.91, 0.99007913 ],
+                        [ 102.83, 0.07832332 ]
+                    ]
+                }
+            },
+            expected: [
+                { asks:
+                    [
+                        { amount: 0.01, price: 103.426 },
+                        { amount: 15, price: 103.5 },
+                        { amount: 0.425, price: 103.504 },
+                        { amount: 0.1, price: 103.505 }
+                    ],
+                base: 'ETH',
+                bids:
+                    [
+                        { amount: 2.48502251, price: 103.2 },
+                        { amount: 0.46540304, price: 103.082 },
+                        { amount: 0.99007913, price: 102.91 },
+                        { amount: 0.07832332, price: 102.83 }
+                    ],
+                quote: 'BTC' }
+            ]
+        },
+        case4: {
+            source: {
+                success: 0,
+                error: 'Invalid pair name: btc_eth'
+            },
+            expected: 'Invalid pair name: btc_eth'
         }
     }
 };

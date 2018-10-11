@@ -143,6 +143,7 @@ describe('Tidex', () => {
 
                 const tickers = await api.getTickers([ 'BCH/ETH', 'AE/ETH' ]);
                 expect(spy).not.toHaveBeenCalled();
+                expect(request).toHaveBeenCalled();
                 expect(tickers).toEqual(expected);
             });
 
@@ -169,18 +170,59 @@ describe('Tidex', () => {
 
         describe('getOrderBooks', async () => {
             const { getOrderBooksTest } = data;
-            it('should do not call method getMarkets()', async () => {
+            it('should return orderBooks and do not call getMarkets', async () => {
                 const spy = jest.spyOn(api, 'getMarkets');
                 const {
                     case1: {
-                        source
+                        source,
+                        expected
                     }
                 } = getOrderBooksTest;
 
                 mockRequest(true, source);
 
-                await api.getOrderBooks({ symbols: ['ETH/BTC'] });
+                const orderBooks = await api.getOrderBooks({ symbols: ['ETH/BTC'] });
                 expect(spy).not.toHaveBeenCalled();
+                expect(request).toHaveBeenCalled();
+                expect(orderBooks).toEqual(expected);
+            });
+
+            it('should throw error about max limit', async () => {
+                const method = api.getOrderBooks({ limit: 2001, symbols: ['BCH/ETH'] });
+                await expect(method).rejects.toThrow('Max limit for orderbook is 2000.');
+            });
+
+            it('should call getMarkets() with empty symbols parameter', async () => {
+                const {
+                    case3: {
+                        sourceForMarkets,
+                        sourceForOrderBooks,
+                        expected
+                    }
+                } = getOrderBooksTest;
+                api.markets = undefined;
+                api.getMarkets = jest.fn().mockReturnValue(sourceForMarkets);
+
+                mockRequest(true, sourceForOrderBooks);
+
+                const orderBooks = await api.getOrderBooks();
+                expect(api.getMarkets).toHaveBeenCalled();
+                expect(orderBooks).toEqual(expected);
+
+                api.getMarkets.mockRestore();
+            });
+
+            it('should throw error from exchange (success: 0)', async () => {
+                const {
+                    case4: {
+                        source,
+                        expected
+                    }
+                } = getOrderBooksTest;
+
+                mockRequest(true, source);
+
+                await expect(api.getOrderBooks({ symbols: ['BCH/ETH'] })).rejects.toThrowError(expected);
             });
         });
     });
