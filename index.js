@@ -223,14 +223,16 @@ module.exports = class TidexApi {
      * each element in asks array - {@Ask}, in bids - {@Bid}.
      */
     async getOrderBooks({ limit = undefined, symbols = [] } = { symbols: [] }) {
-        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets() : undefined);
-
+        let limitParamStr = '';
         if (limit) {
             if (limit > 2000) {
                 throw new Error('Max limit for orderbook is 2000.');
             }
-            queryString += `?limit=${limit}`;
+            limitParamStr = `?limit=${limit}`;
         }
+
+        const markets = (symbols.length === 0) ? await this.getMarkets() : undefined;
+        const queryString = getQueryString(symbols, markets) + limitParamStr;
 
         const source = await publicRequest('depth', queryString);
 
@@ -270,14 +272,16 @@ module.exports = class TidexApi {
      * @returns {Array.<Trades>} - Array of {@Trades} objects.
      */
     async getTrades({ limit = undefined, symbols = [] } = { symbols: [] }) {
-        let queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets() : undefined);
-
+        let limitParamStr = '';
         if (limit) {
             if (limit > 2000) {
                 throw new Error('Max limit for trades is 2000.');
             }
-            queryString += `?limit=${limit}`;
+            limitParamStr = `?limit=${limit}`;
         }
+
+        const markets = (symbols.length === 0) ? await this.getMarkets() : undefined;
+        const queryString = getQueryString(symbols, markets) + limitParamStr;
 
         const source = await publicRequest('trades', queryString);
 
