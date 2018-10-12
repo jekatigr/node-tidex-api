@@ -388,5 +388,114 @@ module.exports = {
             },
             expected: 'Invalid pair name: btc_eth'
         }
+    },
+    getTradesTest: {
+        case1: {
+            source: {
+                eth_btc: [
+                    {
+                        type: 'ask',
+                        price: 103.6,
+                        amount: 0.101,
+                        tid: 4861261,
+                        timestamp: 1370818007
+                    },
+                    {
+                        type: 'bid',
+                        price: 103.989,
+                        amount: 1.51414,
+                        tid: 4861254,
+                        timestamp: 1370817960
+                    }
+                ]
+            },
+            expected: [
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    trades: [
+                        {
+                            amount: 0.101,
+                            operation: 'sell',
+                            orderId: undefined,
+                            price: 103.6,
+                            timestamp: 1370818007,
+                            tradeId: 4861261
+                        },
+                        {
+                            amount: 1.51414,
+                            operation: 'buy',
+                            orderId: undefined,
+                            price: 103.989,
+                            timestamp: 1370817960,
+                            tradeId: 4861254
+                        }]
+                }
+            ]
+
+        },
+        case3: {
+            sourceForMarkets: [
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 3,
+                    fee: 0.2,
+                    minPrice: 0.1,
+                    minAmount: 0.01,
+                    maxPrice: 400,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ],
+            sourceForTrades: {
+                eth_btc: [
+                    {
+                        type: 'ask',
+                        price: 103.6,
+                        amount: 0.101,
+                        tid: 4861261,
+                        timestamp: 1370818007
+                    },
+                    {
+                        type: 'bid',
+                        price: 103.989,
+                        amount: 1.51414,
+                        tid: 4861254,
+                        timestamp: 1370817960
+                    }
+                ]
+            },
+            expected: [
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    trades: [
+                        {
+                            amount: 0.101,
+                            operation: 'sell',
+                            orderId: undefined,
+                            price: 103.6,
+                            timestamp: 1370818007,
+                            tradeId: 4861261
+                        },
+                        {
+                            amount: 1.51414,
+                            operation: 'buy',
+                            orderId: undefined,
+                            price: 103.989,
+                            timestamp: 1370817960,
+                            tradeId: 4861254
+                        }]
+                }
+            ]
+        },
+        case4: {
+            source: {
+                success: 0,
+                error: 'Invalid pair name: btc_eth'
+            },
+            expected: 'Invalid pair name: btc_eth'
+        }
     }
 };

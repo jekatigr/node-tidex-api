@@ -262,8 +262,8 @@ module.exports = class TidexApi {
     /**
      * Return last trades for given markets.
      *
-     * @param {number} limit - number of trades, max = 2000, default = 150
-     * @param Array.<string>} symbols - Array of markets, for example: [
+     * @param {number} limit - Optional. Number of trades, max = 2000, default = 150
+     * @param {Array.<string>} symbols - Optional. Array of markets, for example: [
      *      ETH/BTC,
      *      BTC/WEUR
      * ].
