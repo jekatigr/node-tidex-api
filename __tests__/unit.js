@@ -7,7 +7,10 @@ const Market = require('../models/Market');
 
 const data = require('./testData');
 
-const api = new TidexApi();
+const api = new TidexApi({
+    apiKey: 'sdfsdf',
+    apiSecret: 'sdfdsf34'
+});
 
 function mockRequest(isResolve, response) {
     if (isResolve) {
@@ -21,7 +24,6 @@ describe('Tidex', () => {
     afterEach(() => {
         request.mockRestore();
     });
-
     describe('public api methods', () => {
         describe('getMarkets', () => {
             const { getMarketsTest } = data;
@@ -281,6 +283,96 @@ describe('Tidex', () => {
                 mockRequest(true, source);
 
                 await expect(api.getTrades({ symbols: ['BCH/ETH'] })).rejects.toThrowError(expected);
+            });
+        });
+    });
+
+    describe('private api methods', () => {
+        describe('getAccountInfo', () => {
+            const { getAccountInfoTest } = data;
+            it('should return correct AccountInfo object', async () => {
+                const {
+                    case1: {
+                        source,
+                        expected
+                    }
+                } = getAccountInfoTest;
+
+                mockRequest(true, JSON.stringify(source));
+
+                const accountInfo = await api.getAccountInfo();
+                expect(accountInfo).toEqual(expected);
+                expect(request).toHaveBeenCalled();
+            });
+
+            it('should reject with connection error from request', async () => {
+                const {
+                    case2: {
+                        source,
+                        expected
+                    }
+                } = getAccountInfoTest;
+
+                mockRequest(false, source);
+
+                await expect(api.getAccountInfo()).rejects.toThrowError(expected);
+            });
+
+            it('should throw error from exchange (success: 0)', async () => {
+                const {
+                    case3: {
+                        source,
+                        expected
+                    }
+                } = getAccountInfoTest;
+
+                mockRequest(true, JSON.stringify(source));
+
+                await expect(api.getAccountInfo()).rejects.toThrowError(expected);
+            });
+        });
+
+        describe('getAccountInfoExtended', () => {
+            const { getAccountInfoExtendedTest } = data;
+            it('should return correct AccountInfo object', async () => {
+                const {
+                    case1: {
+                        source,
+                        expected
+                    }
+                } = getAccountInfoExtendedTest;
+
+                mockRequest(true, JSON.stringify(source));
+
+                const accountInfoExtended = await api.getAccountInfoExtended();
+                expect(accountInfoExtended).toEqual(expected);
+                expect(request).toHaveBeenCalled();
+            });
+
+            it('should reject with connection error from request', async () => {
+                const {
+                    case2: {
+                        source,
+                        expected
+                    }
+                } = getAccountInfoExtendedTest;
+
+                mockRequest(false, source);
+
+                await expect(api.getAccountInfoExtended()).rejects.toThrowError(expected);
+            });
+
+            it('should throw error from exchange (success: 0)', async () => {
+                const {
+                    case3: {
+                        source,
+                        expected
+                    }
+                } = getAccountInfoExtendedTest;
+
+                mockRequest(true, JSON.stringify(source));
+
+                await expect(api.getAccountInfoExtended()).rejects.toThrowError(expected);
             });
         });
     });

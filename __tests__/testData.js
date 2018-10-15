@@ -314,22 +314,24 @@ module.exports = {
                 }
             },
             expected: [
-                { asks:
+                {
+                    asks:
                         [
                             { amount: 0.01, price: 103.426 },
                             { amount: 15, price: 103.5 },
                             { amount: 0.425, price: 103.504 },
                             { amount: 0.1, price: 103.505 }
                         ],
-                base: 'ETH',
-                bids:
+                    base: 'ETH',
+                    bids:
                         [
                             { amount: 2.48502251, price: 103.2 },
                             { amount: 0.46540304, price: 103.082 },
                             { amount: 0.99007913, price: 102.91 },
                             { amount: 0.07832332, price: 102.83 }
                         ],
-                quote: 'BTC' }
+                    quote: 'BTC'
+                }
             ]
         },
         case3: {
@@ -363,22 +365,24 @@ module.exports = {
                 }
             },
             expected: [
-                { asks:
-                    [
-                        { amount: 0.01, price: 103.426 },
-                        { amount: 15, price: 103.5 },
-                        { amount: 0.425, price: 103.504 },
-                        { amount: 0.1, price: 103.505 }
-                    ],
-                base: 'ETH',
-                bids:
-                    [
-                        { amount: 2.48502251, price: 103.2 },
-                        { amount: 0.46540304, price: 103.082 },
-                        { amount: 0.99007913, price: 102.91 },
-                        { amount: 0.07832332, price: 102.83 }
-                    ],
-                quote: 'BTC' }
+                {
+                    asks:
+                        [
+                            { amount: 0.01, price: 103.426 },
+                            { amount: 15, price: 103.5 },
+                            { amount: 0.425, price: 103.504 },
+                            { amount: 0.1, price: 103.505 }
+                        ],
+                    base: 'ETH',
+                    bids:
+                        [
+                            { amount: 2.48502251, price: 103.2 },
+                            { amount: 0.46540304, price: 103.082 },
+                            { amount: 0.99007913, price: 102.91 },
+                            { amount: 0.07832332, price: 102.83 }
+                        ],
+                    quote: 'BTC'
+                }
             ]
         },
         case4: {
@@ -496,6 +500,238 @@ module.exports = {
                 error: 'Invalid pair name: btc_eth'
             },
             expected: 'Invalid pair name: btc_eth'
+        }
+    },
+    getAccountInfoTest: {
+        case1: {
+            source: {
+                success: 1,
+                return: {
+                    funds: {
+                        btc: 0,
+                        ltc: 0,
+                        eth: 0.03663645195115,
+                        dash: 0,
+                        doge: 0,
+                        bts: 0,
+                        steem: 0,
+                        waves: 0,
+                        wct: 0,
+                        wbtc: 0,
+                        incnt: 0,
+                        'b@': 0,
+                        mrt: 0,
+                        mer: 0,
+                        aqua: 0,
+                        rbx: 0,
+                        tks: 0,
+                        wusd: 0,
+                        weur: 0,
+                        wgo: 0,
+                        gnt: 0,
+                        edg: 0,
+                        rlc: 0,
+                        icn: 0,
+                        wings: 0,
+                        vsl: 0,
+                        time: 0,
+                        taas: 0,
+                        kolion: 0,
+                        riddle: 0,
+                        ant: 0,
+                        efyt: 0,
+                        mgo: 0,
+                        wett: 0,
+                        eett: 0,
+                        qrl: 0,
+                        emgo: 0,
+                        bnt: 0,
+                        snm: 0,
+                        zrc: 0,
+                        snt: 0,
+                        mco: 0,
+                        storj: 0,
+                        eos: 0,
+                        wgr: 0,
+                        sta: 0,
+                        pbt: 0,
+                        bch: 0,
+                        wsur: 0,
+                        sur: 0,
+                        msp: 0,
+                        inpay: 0,
+                        mtl: 0,
+                        aht: 0,
+                        ping: 0,
+                        eot: 0,
+                        ae: 0,
+                        pix: 0,
+                        credo: 0,
+                        life: 0,
+                        mth: 0,
+                        bmc: 0,
+                        trct: 0,
+                        knc: 0,
+                        msd: 0,
+                        sub: 0,
+                        enj: 0,
+                        evx: 0,
+                        ocl: 0,
+                        eng: 0,
+                        tdx: 0,
+                        la: 0,
+                        prg: 0,
+                        icos: 0,
+                        usdt: 0,
+                        arn: 0,
+                        ryz: 0,
+                        b2b: 0,
+                        cat: 0,
+                        snov: 0,
+                        drgn: 0,
+                        tie: 0,
+                        trx: 0,
+                        wax: 0,
+                        agi: 0,
+                        vee: 0,
+                        omg: 0,
+                        srn: 0,
+                        tio: 0,
+                        sol: 0,
+                        zrx: 0,
+                        bar: 0,
+                        key: 0,
+                        idh: 0,
+                        bdg: 0,
+                        cpc: 0,
+                        stq: 0,
+                        mtn: 0,
+                        bins: 0,
+                        plc: 0,
+                        dth: 0,
+                        ntk: 0,
+                        ren: 0,
+                        cs: 0,
+                        rem: 0,
+                        dmt: 0,
+                        hkn: 0,
+                        tbar: 0,
+                        drop: 0,
+                        hav: 0,
+                        loom: 0,
+                        echt: 0,
+                        ven: 0,
+                        crpt: 0,
+                        sen: 0,
+                        hur: 0,
+                        svd: 0,
+                        fsn: 0,
+                        poa: 0,
+                        npxs: 0,
+                        plcn: 0,
+                        engt: 0,
+                        smq: 0
+                    },
+                    rights: {
+                        info: true,
+                        trade: true,
+                        withdraw: false
+                    },
+                    transaction_count: 0,
+                    open_orders: 1,
+                    server_time: 1539359278
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0001549',
+                    time: '00:00:00.0110166',
+                    errors: null
+                }
+            },
+            expected: {
+                balances:
+                    [
+                        {
+                            currency: 'ETH',
+                            free: 0,
+                            used: 0,
+                            total: 0.03663645195115
+                        }
+                    ],
+                openOrdersCount: 1,
+                rights: {
+                    info: true,
+                    trade: true,
+                    withdraw: false
+                }
+            },
+        },
+        case2: {
+            source: 'empty method',
+            expected: 'Exception for private method \'getInfo\' request, params: {}, ex: empty method'
+        },
+        case3: {
+            source: {
+                success: 0,
+                error: 'some error'
+            },
+            expected: 'Error from exchange, error: \'some error\''
+        }
+    },
+    getAccountInfoExtendedTest: {
+        case1: {
+            source: {
+                success: 1,
+                return: {
+                    funds: {
+                        eth: {
+                            value: 0.0400675793891501,
+                            inOrders: 0
+                        }
+                    },
+                    rights: {
+                        info: true,
+                        trade: true,
+                        withdraw: false
+                    },
+                    transaction_count: 0,
+                    open_orders: 0,
+                    server_time: 1539599447
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0000599',
+                    time: '00:00:00.0106174',
+                    errors: null
+                }
+            },
+            expected: {
+                balances: [
+                    {
+                        currency: 'ETH',
+                        free: 0.0400675793891501,
+                        used: 0,
+                        total: 0.0400675793891501
+                    }
+                ],
+                openOrdersCount: 0,
+                rights: {
+                    info: true,
+                    trade: true,
+                    withdraw: false
+                }
+            }
+        },
+        case2: {
+            source: 'empty method',
+            expected: 'Exception for private method \'getInfoExt\' request, params: {}, ex: empty method'
+        },
+        case3: {
+            source: {
+                success: 0,
+                error: 'some error'
+            },
+            expected: 'Error from exchange, error: \'some error\''
         }
     }
 };
