@@ -16,6 +16,12 @@ const Order = require('./models/Order');
 const PUBLIC_API_URL = 'https://api.tidex.com/api/3';
 const PRIVATE_API_URL = ' https://api.tidex.com/tapi';
 
+const ORDER_STATUSES = {
+    ACTIVE: 'active',
+    CLOSED: 'closed',
+    CANCELLED: 'cancelled',
+    CANCELLED_PARTIALLY: 'cancelled_partially'
+};
 
 /**
  * Converts local symbol string to tidex internal market string.
@@ -457,9 +463,9 @@ module.exports = class TidexApi {
             const orderRaw = res.return;
             const { init_order_id: initOrderId, order_id: orderId, received, remains } = orderRaw;
 
-            let status = 'active';
+            let status = ORDER_STATUSES.ACTIVE;
             if (orderId === 0 || remains === 0) {
-                status = 'closed';
+                status = ORDER_STATUSES.CLOSED;
             }
 
             return new Order({
@@ -481,12 +487,12 @@ module.exports = class TidexApi {
     /**
      * Returns open orders for account.
      *
-     * @param {string} symbol - Market, for example: 'LTC/ETH'.
+     * @param {string} symbol - Optional. Market, for example: 'LTC/ETH'.
      * All open orders will be received in case symbol parameter omitted.
      *
      * @returns {Array.<Order>} - array of open orders.
      */
-    async getActiveOrders(symbol) {
+    async getActiveOrders(symbol = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
         let params;
@@ -510,7 +516,7 @@ module.exports = class TidexApi {
                     amount,
                     price: rate,
                     created: timestampCreated,
-                    status: 'active'
+                    status: ORDER_STATUSES.ACTIVE
                 }));
             }
 
@@ -607,10 +613,10 @@ module.exports = class TidexApi {
 
             let statusStr;
             switch (status) {
-                case 0: { statusStr = 'active'; break; }
-                case 1: { statusStr = 'closed'; break; }
-                case 2: { statusStr = 'cancelled'; break; }
-                case 3: { statusStr = 'cancelled_partially'; break; }
+                case 0: { statusStr = ORDER_STATUSES.ACTIVE; break; }
+                case 1: { statusStr = ORDER_STATUSES.CLOSED; break; }
+                case 2: { statusStr = ORDER_STATUSES.CANCELLED; break; }
+                case 3: { statusStr = ORDER_STATUSES.CANCELLED_PARTIALLY; break; }
                 default: { statusStr = undefined; break; }
             }
 
