@@ -120,6 +120,12 @@ const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
     }
 };
 
+const checkCredentials = (apiKey, apiSecret) => {
+    if (!apiKey || apiKey === '' || !apiSecret || apiSecret === '') {
+        throw new Error(`Missing ${!apiKey || apiKey === '' ? 'apiKey' : 'apiSecret'} property for private api request`);
+    }
+};
+
 module.exports = class TidexApi {
     constructor({ apiKey = undefined, apiSecret = undefined } = {}) {
         this.apiKey = apiKey;
@@ -322,6 +328,8 @@ module.exports = class TidexApi {
      * @returns {AccountInfo} - information object.
      */
     async getAccountInfo() {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfo');
 
         if (res.success) {
@@ -353,6 +361,8 @@ module.exports = class TidexApi {
      * @returns {AccountInfo} - information object.
      */
     async getAccountInfoExtended() {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfoExt');
 
         if (res.success) {
@@ -391,6 +401,8 @@ module.exports = class TidexApi {
      * @returns {Order} - {@Order} object.
      */
     async limitOrder(symbol, price, amount, operation) {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         let market;
         let base, quote;
         if (!symbol) {
@@ -475,6 +487,8 @@ module.exports = class TidexApi {
      * @returns {Array.<Order>} - array of open orders.
      */
     async getActiveOrders(symbol) {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         let params;
         if (symbol) {
             params = { pair: convertSymbolToTidexPairString(symbol) };
@@ -516,6 +530,8 @@ module.exports = class TidexApi {
      * @returns {Array.<Trades>} - array of trade history.
      */
     async getTradeHistory({ count = undefined, fromId = undefined, symbol = undefined } = {}) {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         const params = {};
         if (count !== undefined) params.count = count;
         if (fromId !== undefined) params.from_id = fromId;
@@ -569,6 +585,8 @@ module.exports = class TidexApi {
      * @returns {Order} - order object.
      */
     async getOrder(orderId) {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         if (!orderId) {
             throw new Error('Order id is required for getOrder method.');
         }
@@ -621,6 +639,8 @@ module.exports = class TidexApi {
      * @returns {Array.<Balance>} - array of {@Balance} objects updated after order cancellation
      */
     async cancelOrder(orderId) {
+        checkCredentials(this.apiKey, this.apiSecret);
+
         if (!orderId) {
             throw new Error('Order id is required for cancelOrder method.');
         }
