@@ -58,10 +58,11 @@ const getQueryString = (symbols = [], markets) => {
  *
  * @param {string} method - public api method name.
  * @param {string} queryString - query string, part of uri.
+ * @param {Object} options - options, which will be added to request.
  *
  * @returns {Object} Response object.
  */
-const publicRequest = async (method, queryString = '') => {
+const publicRequest = async (method, queryString = '', options = {}) => {
     try {
         return await request({
             url: `${PUBLIC_API_URL}/${method}/${queryString}`,
@@ -69,7 +70,8 @@ const publicRequest = async (method, queryString = '') => {
                 Connection: 'keep-alive'
             },
             gzip: true,
-            json: true
+            json: true,
+            ...options
         });
     } catch (ex) {
         throw new Error(`Exception for '${method}' method request, queryString: ${queryString}, ex: ${ex}`);
@@ -95,11 +97,12 @@ const sign = (key, str) => {
  * @param {string} apiKey - string with api key.
  * @param {string} apiSecret - string with api secret.
  * @param {string} method - private api method name.
- * @param {Object} params - object with request parameters.
+ * @param {Object} params - object with request body parameters.
+ * @param {Object} options - options, which will be added to request.
  *
  * @returns {Object} Response object.
  */
-const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
+const privateRequest = async (apiKey, apiSecret, method, params = {}, options = {}) => {
     try {
         const body = {
             ...params,
@@ -118,7 +121,8 @@ const privateRequest = async (apiKey, apiSecret, method, params = {}) => {
                 Sign: signed
             },
             gzip: true,
-            body: bodyConverted
+            body: bodyConverted,
+            ...options
         });
         return JSON.parse(res);
     } catch (ex) {
@@ -143,11 +147,13 @@ module.exports = class TidexApi {
     /**
      * Returns available markets. If local markets cache not filled - fetch and save markets.
      *
+     * @param {Object} options - options, which will be added to request.
+     *
      * @returns {Array.<Market>} - Array with {@Market} objects.
      */
-    async getMarkets() {
+    async getMarkets(options = undefined) {
         if (!this.markets) {
-            const res = await publicRequest('info');
+            const res = await publicRequest('info', undefined, options);
 
             if (Object.prototype.hasOwnProperty.call(res, 'success') && res.success === 0) {
                 throw new Error(res.error);
@@ -189,12 +195,14 @@ module.exports = class TidexApi {
      * ].
      * All available tickers will be received in case symbols parameter omitted.
      *
+     * @param {Object} options - options, which will be added to request.
+     *
      * @returns {Array.<Ticker>} array with tickers.
      */
-    async getTickers(symbols = []) {
+    async getTickers(symbols = [], options = undefined) {
         const queryString = getQueryString(symbols, (symbols.length === 0) ? await this.getMarkets() : undefined);
 
-        const source = await publicRequest('ticker', queryString);
+        const source = await publicRequest('ticker', queryString, options);
 
         if (Object.prototype.hasOwnProperty.call(source, 'success') && source.success === 0) {
             throw new Error(source.error);
@@ -230,11 +238,12 @@ module.exports = class TidexApi {
      *      BTC/WEUR
      * ].
      * Orderbooks for all available markets will be received in case symbols parameter omitted.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Array.<OrderBook>} - Array of {@OrderBook} objects,
      * each element in asks array - {@Ask}, in bids - {@Bid}.
      */
-    async getOrderBooks({ limit = undefined, symbols = [] } = { symbols: [] }) {
+    async getOrderBooks({ limit = undefined, symbols = [] } = { symbols: [] }, options = undefined) {
         let limitParamStr = '';
         if (limit) {
             if (limit > 2000) {
@@ -246,7 +255,7 @@ module.exports = class TidexApi {
         const markets = (symbols.length === 0) ? await this.getMarkets() : undefined;
         const queryString = getQueryString(symbols, markets) + limitParamStr;
 
-        const source = await publicRequest('depth', queryString);
+        const source = await publicRequest('depth', queryString, options);
 
         if (Object.prototype.hasOwnProperty.call(source, 'success') && source.success === 0) {
             throw new Error(source.error);
@@ -280,10 +289,11 @@ module.exports = class TidexApi {
      *      BTC/WEUR
      * ].
      * Trades for all available markets will be received in case symbols parameter omitted.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Array.<Trades>} - Array of {@Trades} objects.
      */
-    async getTrades({ limit = undefined, symbols = [] } = { symbols: [] }) {
+    async getTrades({ limit = undefined, symbols = [] } = { symbols: [] }, options = undefined) {
         let limitParamStr = '';
         if (limit) {
             if (limit > 2000) {
@@ -295,7 +305,7 @@ module.exports = class TidexApi {
         const markets = (symbols.length === 0) ? await this.getMarkets() : undefined;
         const queryString = getQueryString(symbols, markets) + limitParamStr;
 
-        const source = await publicRequest('trades', queryString);
+        const source = await publicRequest('trades', queryString, options);
 
         if (Object.prototype.hasOwnProperty.call(source, 'success') && source.success === 0) {
             throw new Error(source.error);
@@ -331,12 +341,14 @@ module.exports = class TidexApi {
     /**
      * Return information about account. Balances WILL NOT be separated on 'free' and 'used'.
      *
+     * @param {Object} options - options, which will be added to request.
+     *
      * @returns {AccountInfo} - information object.
      */
-    async getAccountInfo() {
+    async getAccountInfo(options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
-        const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfo');
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfo', undefined, options);
 
         if (res.success) {
             const { funds } = res.return;
@@ -364,12 +376,14 @@ module.exports = class TidexApi {
     /**
      * Return information about account. Balances will be separated on 'free' and 'used'.
      *
+     * @param {Object} options - options, which will be added to request.
+     *
      * @returns {AccountInfo} - information object.
      */
-    async getAccountInfoExtended() {
+    async getAccountInfoExtended(options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
-        const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfoExt');
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'getInfoExt', undefined, options);
 
         if (res.success) {
             const { funds } = res.return;
@@ -403,10 +417,11 @@ module.exports = class TidexApi {
      * @param {number} price - Price.
      * @param {number} amount - Amount.
      * @param {string} operation - Operation: 'buy' or 'sell'.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Order} - {@Order} object.
      */
-    async limitOrder(symbol, price, amount, operation) {
+    async limitOrder(symbol, price, amount, operation, options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
         let market;
@@ -457,7 +472,7 @@ module.exports = class TidexApi {
             type: operation,
             rate: price,
             amount
-        });
+        }, options);
 
         if (res.success) {
             const orderRaw = res.return;
@@ -489,17 +504,18 @@ module.exports = class TidexApi {
      *
      * @param {string} symbol - Optional. Market, for example: 'LTC/ETH'.
      * All open orders will be received in case symbol parameter omitted.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Array.<Order>} - array of open orders.
      */
-    async getActiveOrders(symbol = undefined) {
+    async getActiveOrders(symbol = undefined, options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
         let params;
         if (symbol) {
             params = { pair: convertSymbolToTidexPairString(symbol) };
         }
-        const res = await privateRequest(this.apiKey, this.apiSecret, 'ActiveOrders', params);
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'ActiveOrders', params, options);
 
         if (res.success) {
             const orders = res.return;
@@ -532,10 +548,11 @@ module.exports = class TidexApi {
      * @param {number} count - The number of trades for display. Optional.
      * @param {number} fromId - Trade ID, from which the display starts. Optional.
      * @param {string} symbol - Market, for example: 'LTC/ETH'. Optional.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Array.<Trades>} - array of trade history.
      */
-    async getTradeHistory({ count = undefined, fromId = undefined, symbol = undefined } = {}) {
+    async getTradeHistory({ count = undefined, fromId = undefined, symbol = undefined } = {}, options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
         const params = {};
@@ -543,7 +560,7 @@ module.exports = class TidexApi {
         if (fromId !== undefined) params.from_id = fromId;
         if (symbol !== undefined) params.pair = convertSymbolToTidexPairString(symbol);
 
-        const res = await privateRequest(this.apiKey, this.apiSecret, 'TradeHistory', params);
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'TradeHistory', params, options);
 
         if (res.success) {
             const source = res.return;
@@ -587,16 +604,17 @@ module.exports = class TidexApi {
      * Returns order information.
      *
      * @param {number} orderId - order id.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Order} - order object.
      */
-    async getOrder(orderId) {
+    async getOrder(orderId, options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
         if (!orderId) {
             throw new Error('Order id is required for getOrder method.');
         }
-        const res = await privateRequest(this.apiKey, this.apiSecret, 'OrderInfo', { order_id: orderId });
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'OrderInfo', { order_id: orderId }, options);
 
         if (res.success) {
             const orderRaw = res.return;
@@ -641,16 +659,17 @@ module.exports = class TidexApi {
      * Order cancellation.
      *
      * @param {number} orderId - order id.
+     * @param {Object} options - options, which will be added to request.
      *
      * @returns {Array.<Balance>} - array of {@Balance} objects updated after order cancellation
      */
-    async cancelOrder(orderId) {
+    async cancelOrder(orderId, options = undefined) {
         checkCredentials(this.apiKey, this.apiSecret);
 
         if (!orderId) {
             throw new Error('Order id is required for cancelOrder method.');
         }
-        const res = await privateRequest(this.apiKey, this.apiSecret, 'CancelOrder', { order_id: orderId });
+        const res = await privateRequest(this.apiKey, this.apiSecret, 'CancelOrder', { order_id: orderId }, options);
 
         if (res.success) {
             const { funds } = res.return;
