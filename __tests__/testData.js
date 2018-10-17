@@ -733,5 +733,211 @@ module.exports = {
             },
             expected: 'Error from exchange, error: \'some error\''
         }
+    },
+    limitOrderTest: {
+        case1: {
+            sourceForGetMarkets: [
+                {
+                    base: 'LTC',
+                    quote: 'BTC',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 0.2,
+                    minAmount: 0.1,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 250
+                },
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 1e-8,
+                    minAmount: 0.001,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ]
+        },
+        case2: {
+            source: {
+                success: 0,
+                error: 'Not enougth ETH to create buy order.'
+            },
+            expected: 'Error from exchange, error: \'Not enougth ETH to create buy order.\''
+        },
+        case3: {
+            sourceForGetMarket: [
+                {
+                    base: 'REM',
+                    quote: 'ETH',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 0.000000001,
+                    minAmount: 0.1,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0005
+                },
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 1e-8,
+                    minAmount: 0.001,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ],
+            source: {
+                success: 1,
+                return: {
+                    received: 0,
+                    remains: 39281.9405,
+                    init_order_id: 243206818,
+                    order_id: 243206818,
+                    funds: {
+                        rem: 0,
+                        eth: 7.91501e-11
+                    },
+                    trades: []
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0199761',
+                    time: '00:00:00.0356738',
+                    errors: null
+                }
+            },
+            expected:
+                {
+                    id: 243206818,
+                    base: 'REM',
+                    quote: 'ETH',
+                    operation: 'buy',
+                    amount: 39281.9405,
+                    remain: 39281.9405,
+                    price: 0.00000102,
+                    status: 'active'
+                }
+        },
+        case4: {
+            sourceForGetMarket: [
+                {
+                    base: 'REM',
+                    quote: 'ETH',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 0.000000001,
+                    minAmount: 0.1,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0005
+                },
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 1e-8,
+                    minAmount: 0.001,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ],
+            source: {
+                success: 1,
+                return: {
+                    received: 0,
+                    remains: 39281.9405,
+                    init_order_id: 243206818,
+                    order_id: 0,
+                    funds: {
+                        rem: 0,
+                        eth: 7.91501e-11
+                    },
+                    trades: []
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0199761',
+                    time: '00:00:00.0356738',
+                    errors: null
+                }
+            },
+            expected:
+                {
+                    id: 243206818,
+                    base: 'REM',
+                    quote: 'ETH',
+                    operation: 'buy',
+                    amount: 39281.9405,
+                    remain: 39281.9405,
+                    price: 0.00000102,
+                    status: 'closed'
+                }
+        },
+        case5: {
+            sourceForGetMarket: [
+                {
+                    base: 'REM',
+                    quote: 'ETH',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 0.000000001,
+                    minAmount: 0.1,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0005
+                },
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 1e-8,
+                    minAmount: 0.001,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ],
+            source: {
+                success: 1,
+                return: {
+                    received: 0,
+                    remains: 0,
+                    init_order_id: 243206818,
+                    order_id: 243206818,
+                    funds: {
+                        rem: 0,
+                        eth: 7.91501e-11
+                    },
+                    trades: []
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0199761',
+                    time: '00:00:00.0356738',
+                    errors: null
+                }
+            },
+            expected:
+                {
+                    id: 243206818,
+                    base: 'REM',
+                    quote: 'ETH',
+                    operation: 'buy',
+                    amount: 0,
+                    remain: 0,
+                    price: 0.00000102,
+                    status: 'closed'
+                }
+        }
     }
 };
