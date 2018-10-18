@@ -939,5 +939,59 @@ module.exports = {
                     status: 'closed'
                 }
         }
+    },
+    getActiveOrdersTest: {
+        case1: {
+            source: {
+                success: 1,
+                return: {
+                    243584845: {
+                        status: 0,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 39281.9405,
+                        rate: 0.00000102,
+                        timestamp_created: 1539866235
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0000512',
+                    time: '00:00:00.0108053',
+                    errors: null
+                }
+            },
+            expected: [
+                {
+                    id: 243584845,
+                    base: 'REM',
+                    quote: 'ETH',
+                    operation: 'buy',
+                    amount: 39281.9405,
+                    remain: 39281.9405,
+                    price: 0.00000102,
+                    status: 'active'
+                }
+            ]
+        },
+        case2: {
+            source: {
+                success: 0,
+                error: 'some error'
+            },
+            expected: 'Error from exchange, error: \'some error\''
+        },
+        case3: {
+            source: {
+                success: 1,
+                return: {},
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0000483',
+                    time: '00:00:00.0147497',
+                    errors: null
+                }
+            }
+        }
     }
 };
