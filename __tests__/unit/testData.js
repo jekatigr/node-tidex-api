@@ -1416,5 +1416,44 @@ module.exports = {
                 status: undefined
             }
         }
+    },
+    cancelOrderTest: {
+        case1: {
+            source: {
+                success: 1,
+                return: {
+                    order_id: 244073809,
+                    funds: {
+                        rem: 0,
+                        eth: 0.0400675793891501
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0068812',
+                    time: '00:00:00.0177859',
+                    errors: null
+                }
+            },
+            expected: [
+                {
+                    currency: 'ETH',
+                    free: 0,
+                    total: 0.0400675793891501,
+                    used: 0
+                }
+            ]
+        },
+        case2: {
+            source: {
+                success: 0,
+                error: 'some error'
+            },
+            expected: 'Error from exchange, error: \'some error\''
+        },
+        case3: {
+            source: 'empty method',
+            expected: 'Exception for private method \'CancelOrder\' request, params: {"order_id":123}, ex: empty method'
+        },
     }
 };
