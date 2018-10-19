@@ -26,91 +26,74 @@ async function emptyApiSecret(method) {
     await expect(method()).rejects.toThrowError('Missing apiSecret property for private api request');
 }
 
-describe('getActiveOrders', () => {
+describe('getTradeHistory', () => {
     afterEach(() => {
         request.mockRestore();
     });
 
-    const { getActiveOrdersTest } = data;
+    const { getTradeHistoryTest } = data;
+
     it('should throw error about empty apiKey', async () => {
         api.apiKey = '';
-        await emptyApiKey(api.getActiveOrders.bind(api));
+        await emptyApiKey(api.getTradeHistory.bind(api));
 
         api.apiKey = 'klndscfds';
     });
 
     it('should throw error about undefined apiKey', async () => {
         api.apiKey = undefined;
-        await emptyApiKey(api.getActiveOrders.bind(api));
+        await emptyApiKey(api.getTradeHistory.bind(api));
 
         api.apiKey = 'klndscfds';
     });
 
     it('should throw error about empty apiSecret', async () => {
         api.apiSecret = '';
-        await emptyApiSecret(api.getActiveOrders.bind(api));
+        await emptyApiSecret(api.getTradeHistory.bind(api));
 
         api.apiSecret = 'skdjncs';
     });
 
     it('should throw error about undefined apiSecret', async () => {
         api.apiSecret = undefined;
-        await emptyApiSecret(api.getActiveOrders.bind(api));
+        await emptyApiSecret(api.getTradeHistory.bind(api));
 
         api.apiSecret = 'skdjncs';
     });
 
-    it('should return correct array of active orders objects', async () => {
+    it('should return correct array of trade history', async () => {
         const {
             case1: {
                 source,
                 expected
             }
-        } = getActiveOrdersTest;
+        } = getTradeHistoryTest;
 
         mockRequest(true, JSON.stringify(source));
 
-        const activeOrders = await api.getActiveOrders();
-        delete activeOrders[0].created;
+        const tradeHistory = await api.getTradeHistory();
         const signature = request.mock.calls[0][0].headers.Sign;
         const incorrectSign = !(signature) || signature === '';
         const urlRequest = request.mock.calls[0][0].url;
 
-        expect(activeOrders).toEqual(expected);
+        expect(tradeHistory).toEqual(expected);
         expect(request).toHaveBeenCalled();
         expect(urlRequest).toBe(' https://api.tidex.com/tapi');
         expect(incorrectSign).toBe(false);
     });
 
-
-    it('should return correct array of active orders objects with symbols', async () => {
-        const {
-            case1: {
-                source,
-                expected
-            }
-        } = getActiveOrdersTest;
-
-        mockRequest(true, JSON.stringify(source));
-        const activeOrders = await api.getActiveOrders('REM/ETH');
-        delete activeOrders[0].created;
-
-        expect(activeOrders).toEqual(expected);
-    });
-
-    it('should throw error from exchange (success: 0, error: \'some error.\')', async () => {
+    it('should return two correct object of trade history', async () => {
         const {
             case2: {
                 source,
                 expected
             }
-        } = getActiveOrdersTest;
+        } = getTradeHistoryTest;
 
         mockRequest(true, JSON.stringify(source));
 
-        const method = api.getActiveOrders();
-
-        await expect(method).rejects.toThrowError(expected);
+        const tradeHistory = await api.getTradeHistory({ fromId: 25070252, count: 2, symbol: 'REM/ETH' });
+        expect(tradeHistory).toEqual(expected);
     });
 
     it('should return empty array', async () => {
@@ -118,25 +101,39 @@ describe('getActiveOrders', () => {
             case3: {
                 source
             }
-        } = getActiveOrdersTest;
+        } = getTradeHistoryTest;
 
         mockRequest(true, JSON.stringify(source));
 
-        const activeOrders = await api.getActiveOrders();
-
-        expect(activeOrders).toEqual([]);
+        const tradeHistory = await api.getTradeHistory();
+        expect(tradeHistory).toEqual([]);
     });
 
-    it('should reject with connection error from request', async () => {
+    it('should throw error from exchange (success: 0, error: \'some error.\')', async () => {
         const {
             case4: {
                 source,
                 expected
             }
-        } = getActiveOrdersTest;
+        } = getTradeHistoryTest;
+
+        mockRequest(true, JSON.stringify(source));
+
+        const method = api.getTradeHistory();
+
+        await expect(method).rejects.toThrowError(expected);
+    });
+
+    it('should reject with connection error from request', async () => {
+        const {
+            case5: {
+                source,
+                expected
+            }
+        } = getTradeHistoryTest;
 
         mockRequest(false, source);
 
-        await expect(api.getActiveOrders()).rejects.toThrowError(expected);
+        await expect(api.getTradeHistory()).rejects.toThrowError(expected);
     });
 });

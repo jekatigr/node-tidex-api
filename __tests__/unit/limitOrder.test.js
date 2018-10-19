@@ -167,6 +167,8 @@ describe('limitOrder', () => {
         const method = api.limitOrder('LTC/BTC', 2, 200, 'sell');
 
         await expect(method).rejects.toThrowError(expected);
+
+        api.getMarkets.mockRestore();
     });
 
     it('should return correct Order object', async () => {
@@ -191,6 +193,8 @@ describe('limitOrder', () => {
         expect(request).toHaveBeenCalled();
         expect(urlRequest).toBe(' https://api.tidex.com/tapi');
         expect(incorrectSign).toBe(false);
+
+        api.getMarkets.mockRestore();
     });
 
     it('should return correct Order object when orderId === 0', async () => {
@@ -209,6 +213,8 @@ describe('limitOrder', () => {
         delete limitOrder.created;
 
         expect(limitOrder).toEqual(expected);
+
+        api.getMarkets.mockRestore();
     });
 
     it('should return correct Order object when remains === 0', async () => {
@@ -227,5 +233,24 @@ describe('limitOrder', () => {
         delete limitOrder.created;
 
         expect(limitOrder).toEqual(expected);
+
+        api.getMarkets.mockRestore();
+    });
+
+    it('should reject with connection error from request', async () => {
+        const {
+            case6: {
+                sourceForGetMarket,
+                source,
+                expected
+            }
+        } = limitOrderTest;
+
+        console.log(source);
+
+        api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarket);
+        mockRequest(false, source);
+
+        await expect(api.limitOrder('REM/ETH', 0.00000102, 39281.9405, 'buy')).rejects.toThrowError(expected);
     });
 });

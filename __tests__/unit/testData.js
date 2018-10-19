@@ -938,7 +938,35 @@ module.exports = {
                     price: 0.00000102,
                     status: 'closed'
                 }
-        }
+        },
+        case6: {
+            sourceForGetMarket: [
+                {
+                    base: 'REM',
+                    quote: 'ETH',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 0.000000001,
+                    minAmount: 0.1,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0005
+                },
+                {
+                    base: 'ETH',
+                    quote: 'BTC',
+                    precision: 8,
+                    fee: 0.1,
+                    minPrice: 1e-8,
+                    minAmount: 0.001,
+                    maxPrice: 3,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                }
+            ],
+            source: 'empty method',
+            expected: 'Exception for private method \'Trade\' request, params: {"pair":"rem_eth","type":"buy","rate":0.00000102,"amount":39281.9405}, ex: empty method'
+        },
     },
     getActiveOrdersTest: {
         case1: {
@@ -992,6 +1020,224 @@ module.exports = {
                     errors: null
                 }
             }
-        }
+        },
+        case4: {
+            source: 'empty method',
+            expected: 'Exception for private method \'ActiveOrders\' request, params: {}, ex: empty method'
+        },
+    },
+    getTradeHistoryTest: {
+        case1: {
+            source: {
+                success: 1,
+                return: {
+                    25031255: {
+                        trade_id: 25031255,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 100,
+                        rate: 0.00003112,
+                        order_id: 234224913,
+                        is_your_order: false,
+                        timestamp: 1538405421
+                    },
+                    25033988: {
+                        trade_id: 25033988,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 35,
+                        rate: 0.00003132,
+                        order_id: 234263388,
+                        is_your_order: false,
+                        timestamp: 1538411344
+                    },
+                    25070252: {
+                        trade_id: 25070252,
+                        pair: 'rem_eth',
+                        type: 'sell',
+                        amount: 134.865,
+                        rate: 0.00003149,
+                        order_id: 234263509,
+                        is_your_order: false,
+                        timestamp: 1538493508
+                    },
+                    25353589: {
+                        trade_id: 25353589,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 100,
+                        rate: 0.00003398,
+                        order_id: 239674822,
+                        is_your_order: false,
+                        timestamp: 1539173102
+                    },
+                    25506052: {
+                        trade_id: 25506052,
+                        pair: 'rem_eth',
+                        type: 'sell',
+                        amount: 97.73443862,
+                        rate: 0.00003438,
+                        order_id: 239688070,
+                        is_your_order: false,
+                        timestamp: 1539507271
+                    },
+                    25506058: {
+                        trade_id: 25506058,
+                        pair: 'rem_eth',
+                        type: 'sell',
+                        amount: 2.16556138,
+                        rate: 0.00003438,
+                        order_id: 239688070,
+                        is_your_order: false,
+                        timestamp: 1539507273
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0000358',
+                    time: '00:00:00.0167125',
+                    errors: null
+                }
+            },
+            expected: [
+                {
+                    base: 'REM',
+                    quote: 'ETH',
+                    trades:
+                        [
+                            {
+                                amount: 100,
+                                operation: 'buy',
+                                orderId: 234224913,
+                                price: 0.00003112,
+                                timestamp: 1538405421,
+                                tradeId: 25031255
+                            },
+                            {
+                                amount: 35,
+                                operation: 'buy',
+                                orderId: 234263388,
+                                price: 0.00003132,
+                                timestamp: 1538411344,
+                                tradeId: 25033988
+                            },
+                            {
+                                amount: 134.865,
+                                operation: 'sell',
+                                orderId: 234263509,
+                                price: 0.00003149,
+                                timestamp: 1538493508,
+                                tradeId: 25070252
+                            },
+                            {
+                                amount: 100,
+                                operation: 'buy',
+                                orderId: 239674822,
+                                price: 0.00003398,
+                                timestamp: 1539173102,
+                                tradeId: 25353589
+                            },
+                            {
+                                amount: 97.73443862,
+                                operation: 'sell',
+                                orderId: 239688070,
+                                price: 0.00003438,
+                                timestamp: 1539507271,
+                                tradeId: 25506052
+                            },
+                            {
+                                amount: 2.16556138,
+                                operation: 'sell',
+                                orderId: 239688070,
+                                price: 0.00003438,
+                                timestamp: 1539507273,
+                                tradeId: 25506058
+                            }
+                        ]
+                }
+            ]
+        },
+        case2: {
+            source: {
+                success: 1,
+                return: {
+                    25070252: {
+                        trade_id: 25070252,
+                        pair: 'rem_eth',
+                        type: 'sell',
+                        amount: 134.865,
+                        rate: 0.00003149,
+                        order_id: 234263509,
+                        is_your_order: false,
+                        timestamp: 1538493508
+                    },
+                    25353589: {
+                        trade_id: 25353589,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 100,
+                        rate: 0.00003398,
+                        order_id: 239674822,
+                        is_your_order: false,
+                        timestamp: 1539173102
+                    },
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0000381',
+                    time: '00:00:00.0105727',
+                    errors: null
+                }
+            },
+            expected: [
+                {
+                    base: 'REM',
+                    quote: 'ETH',
+                    trades:
+                        [
+                            {
+                                amount: 134.865,
+                                operation: 'sell',
+                                orderId: 234263509,
+                                price: 0.00003149,
+                                timestamp: 1538493508,
+                                tradeId: 25070252
+                            },
+                            {
+                                amount: 100,
+                                operation: 'buy',
+                                orderId: 239674822,
+                                price: 0.00003398,
+                                timestamp: 1539173102,
+                                tradeId: 25353589
+                            },
+                        ]
+                }
+            ]
+        },
+        case3: {
+            source: {
+                success: 1,
+                return: {},
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0000483',
+                    time: '00:00:00.0147497',
+                    errors: null
+                }
+            }
+        },
+        case4: {
+            source: {
+                success: 0,
+                error: 'some error'
+            },
+            expected: 'Error from exchange, error: \'some error\''
+        },
+        case5: {
+            source: 'empty method',
+            expected: 'Exception for private method \'TradeHistory\' request, params: {}, ex: empty method'
+        },
+
     }
 };

@@ -545,10 +545,10 @@ module.exports = class TidexApi {
     /**
      * Returns account history of trades.
      *
-     * @param {number} count - The number of trades for display. Optional.
-     * @param {number} fromId - Trade ID, from which the display starts. Optional.
-     * @param {string} symbol - Market, for example: 'LTC/ETH'. Optional.
-     * @param {Object} options - options, which will be added to request.
+     * @param {number} count - Optional. The number of trades for display.
+     * @param {number} fromId - Optional. Trade ID, from which the display starts.
+     * @param {string} symbol - Optional. Market, for example: 'LTC/ETH'.
+     * @param {Object} options - Optional. options, which will be added to request.
      *
      * @returns {Array.<Trades>} - array of trade history.
      */
