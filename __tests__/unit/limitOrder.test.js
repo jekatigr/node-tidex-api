@@ -246,8 +246,6 @@ describe('limitOrder', () => {
             }
         } = limitOrderTest;
 
-        console.log(source);
-
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarket);
         mockRequest(false, source);
 

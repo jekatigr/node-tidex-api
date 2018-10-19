@@ -1239,5 +1239,182 @@ module.exports = {
             expected: 'Exception for private method \'TradeHistory\' request, params: {}, ex: empty method'
         },
 
+    },
+    getOrderTest: {
+        case1: {
+            source: {
+                success: 1,
+                return: {
+                    234224913: {
+                        start_amount: 100,
+                        status: 1,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 0,
+                        rate: 0.0000316,
+                        timestamp_created: 1538405421
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0008494',
+                    time: '00:00:00.0160928',
+                    errors: null
+                }
+            },
+            expected: {
+                id: 234224913,
+                base: 'REM',
+                quote: 'ETH',
+                operation: 'buy',
+                amount: 100,
+                remain: 0,
+                price: 0.0000316,
+                created: 1538405421,
+                status: 'closed'
+            }
+        },
+        case2: {
+            source: {
+                success: 0,
+                error: 'some error'
+            },
+            expected: 'Error from exchange, error: \'some error\''
+        },
+        case3: {
+            source: 'empty method',
+            expected: 'Exception for private method \'OrderInfo\' request, params: {"order_id":123}, ex: empty method'
+        },
+        case4: {
+            source: {
+                success: 1,
+                return: {
+                    234224913: {
+                        start_amount: 100,
+                        status: 0,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 0,
+                        rate: 0.0000316,
+                        timestamp_created: 1538405421
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0008494',
+                    time: '00:00:00.0160928',
+                    errors: null
+                }
+            },
+            expected: {
+                id: 234224913,
+                base: 'REM',
+                quote: 'ETH',
+                operation: 'buy',
+                amount: 100,
+                remain: 0,
+                price: 0.0000316,
+                created: 1538405421,
+                status: 'active'
+            }
+        },
+        case5: {
+            source: {
+                success: 1,
+                return: {
+                    234224913: {
+                        start_amount: 100,
+                        status: 2,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 0,
+                        rate: 0.0000316,
+                        timestamp_created: 1538405421
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0008494',
+                    time: '00:00:00.0160928',
+                    errors: null
+                }
+            },
+            expected: {
+                id: 234224913,
+                base: 'REM',
+                quote: 'ETH',
+                operation: 'buy',
+                amount: 100,
+                remain: 0,
+                price: 0.0000316,
+                created: 1538405421,
+                status: 'cancelled'
+            }
+        },
+        case6: {
+            source: {
+                success: 1,
+                return: {
+                    234224913: {
+                        start_amount: 100,
+                        status: 3,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 0,
+                        rate: 0.0000316,
+                        timestamp_created: 1538405421
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0008494',
+                    time: '00:00:00.0160928',
+                    errors: null
+                }
+            },
+            expected: {
+                id: 234224913,
+                base: 'REM',
+                quote: 'ETH',
+                operation: 'buy',
+                amount: 100,
+                remain: 0,
+                price: 0.0000316,
+                created: 1538405421,
+                status: 'cancelled_partially'
+            }
+        },
+        case7: {
+            source: {
+                success: 1,
+                return: {
+                    234224913: {
+                        start_amount: 100,
+                        pair: 'rem_eth',
+                        type: 'buy',
+                        amount: 0,
+                        rate: 0.0000316,
+                        timestamp_created: 1538405421
+                    }
+                },
+                stat: {
+                    isSuccess: true,
+                    serverTime: '00:00:00.0008494',
+                    time: '00:00:00.0160928',
+                    errors: null
+                }
+            },
+            expected: {
+                id: 234224913,
+                base: 'REM',
+                quote: 'ETH',
+                operation: 'buy',
+                amount: 100,
+                remain: 0,
+                price: 0.0000316,
+                created: 1538405421,
+                status: undefined
+            }
+        }
     }
 };
