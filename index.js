@@ -151,8 +151,8 @@ module.exports = class TidexApi {
      *
      * @returns {Array.<Market>} - Array with {@Market} objects.
      */
-    async getMarkets(options = undefined) {
-        if (!this.markets) {
+    async getMarkets(force = false, options = undefined) {
+        if (!this.markets || force) {
             const res = await publicRequest('info', undefined, options);
 
             if (Object.prototype.hasOwnProperty.call(res, 'success') && res.success === 0) {

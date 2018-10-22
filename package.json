@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "integration-tests": "jest ./__tests__/integration.js",
-    "unit-tests": "jest -- __tests__/unit/**.test.js",
-    "lint": "./node_modules/.bin/eslint ./"
+    "unit-tests": "jest --config jest.config.unit.js",
+    "lint": "./node_modules/.bin/eslint ./",
+    "coverage": "jest --collectCoverageFrom=**.js --coverage \"__tests__/unit/.*\\.test\\.js\""
   },
   "dependencies": {
     "request": "^2.88.0",
