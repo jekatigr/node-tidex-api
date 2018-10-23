@@ -84,6 +84,29 @@ module.exports = {
                     maxPrice: 100,
                     maxAmount: 2000000,
                     minTotal: 0.0002
+                }],
+            markets: [
+                {
+                    base: 'REM',
+                    quote: 'BTC',
+                    precision: 6,
+                    fee: 0.2,
+                    minPrice: 0.1,
+                    minAmount: 0.01,
+                    maxPrice: 400,
+                    maxAmount: 1000000,
+                    minTotal: 0.0001
+                },
+                {
+                    base: 'AE',
+                    quote: 'ETH',
+                    precision: 9,
+                    fee: 0.2,
+                    minPrice: 0.1,
+                    minAmount: 0.01,
+                    maxPrice: 100,
+                    maxAmount: 2000000,
+                    minTotal: 0.0002
                 }]
         },
         case5: {
