@@ -147,7 +147,8 @@ module.exports = class TidexApi {
     /**
      * Returns available markets. If local markets cache not filled - fetch and save markets.
      *
-     * @param {Object} options - options, which will be added to request.
+     * @param {boolean} force - Optional. Update local markets cache.
+     * @param {Object} options - Optional. Options, which will be added to request.
      *
      * @returns {Array.<Market>} - Array with {@Market} objects.
      */

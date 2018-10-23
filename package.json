@@ -1,6 +1,6 @@
 {
   "name": "node-tidex-api",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Node.js module for Tidex exchange api integration.",
   "main": "index.js",
   "scripts": {
@@ -30,7 +30,16 @@
     "integration",
     "cryptoexchange"
   ],
-  "author": "jekatigr <jekatigr@yandex.ru>",
+  "contributors": [
+    {
+      "name": "jekatigr",
+      "email": "jekatigr@yandex.ru"
+    },
+    {
+      "name": "maconidolma",
+      "email": "linkova93@gmail.com"
+    }
+  ],
   "license": "MIT",
   "homepage": "https://github.com/jekatigr/node-tidex-api"
 }

@@ -49,6 +49,10 @@ const markets = await api.getMarkets();
 
 Returns available markets. Module will serve local cache with markets after first fetch.
 
+|Param|Type|Required|Default|Description|
+|--- |--- |--- |--- |--- |
+|force|Boolean|false|false|Update local cache or not
+
 
 Example:
 
