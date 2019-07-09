@@ -15,7 +15,7 @@ function mockRequest(isResolve, response) {
     }
 }
 
-describe('getTrades', async () => {
+describe('getTrades', () => {
     afterEach(() => {
         request.mockRestore();
     });
@@ -77,6 +77,6 @@ describe('getTrades', async () => {
 
         mockRequest(true, source);
 
-        await expect(api.getTrades({ symbols: ['BCH/ETH'] })).rejects.toThrowError(expected);
+        await expect(api.getTrades({ symbols: ['BCH/ETH'] })).rejects.toThrow(expected);
     });
 });

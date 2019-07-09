@@ -34,7 +34,7 @@ describe('getMarkets', () => {
         mockRequest(false, source);
 
         api.markets = undefined;
-        await expect(api.getMarkets()).rejects.toThrowError(expected);
+        await expect(api.getMarkets()).rejects.toThrow(expected);
     });
 
     it('should throw error from exchange (success: 0)', async () => {
@@ -48,7 +48,7 @@ describe('getMarkets', () => {
         mockRequest(true, source);
 
         api.markets = undefined;
-        await expect(api.getMarkets()).rejects.toThrowError(expected);
+        await expect(api.getMarkets()).rejects.toThrow(expected);
     });
 
     it('should return markets with given data and not call request with force = false', async () => {

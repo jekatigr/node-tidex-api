@@ -31,7 +31,7 @@ describe('getTickers', () => {
 
         mockRequest(false, source);
 
-        await expect(api.getTickers(['BCH/ETH'])).rejects.toThrowError(expected);
+        await expect(api.getTickers(['BCH/ETH'])).rejects.toThrow(expected);
     });
 
     it('should throw error from exchange (success: 0)', async () => {
@@ -44,7 +44,7 @@ describe('getTickers', () => {
 
         mockRequest(true, source);
 
-        await expect(api.getTickers(['BCH/ETH'])).rejects.toThrowError(expected);
+        await expect(api.getTickers(['BCH/ETH'])).rejects.toThrow(expected);
     });
 
     it('should return tickers and do not call getMarkets', async () => {

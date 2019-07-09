@@ -19,11 +19,11 @@ function mockRequest(isResolve, response) {
 }
 
 async function emptyApiKey(method) {
-    await expect(method()).rejects.toThrowError('Missing apiKey property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiKey property for private api request');
 }
 
 async function emptyApiSecret(method) {
-    await expect(method()).rejects.toThrowError('Missing apiSecret property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiSecret property for private api request');
 }
 
 describe('getActiveOrders', () => {
@@ -110,7 +110,7 @@ describe('getActiveOrders', () => {
 
         const method = api.getActiveOrders();
 
-        await expect(method).rejects.toThrowError(expected);
+        await expect(method).rejects.toThrow(expected);
     });
 
     it('should return empty array', async () => {
@@ -137,6 +137,6 @@ describe('getActiveOrders', () => {
 
         mockRequest(false, source);
 
-        await expect(api.getActiveOrders()).rejects.toThrowError(expected);
+        await expect(api.getActiveOrders()).rejects.toThrow(expected);
     });
 });

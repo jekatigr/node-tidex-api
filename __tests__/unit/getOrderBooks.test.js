@@ -15,7 +15,7 @@ function mockRequest(isResolve, response) {
     }
 }
 
-describe('getOrderBooks', async () => {
+describe('getOrderBooks', () => {
     afterEach(() => {
         request.mockRestore();
     });
@@ -77,6 +77,6 @@ describe('getOrderBooks', async () => {
 
         mockRequest(true, source);
 
-        await expect(api.getOrderBooks({ symbols: ['BCH/ETH'] })).rejects.toThrowError(expected);
+        await expect(api.getOrderBooks({ symbols: ['BCH/ETH'] })).rejects.toThrow(expected);
     });
 });

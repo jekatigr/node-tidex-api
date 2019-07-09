@@ -19,11 +19,11 @@ function mockRequest(isResolve, response) {
 }
 
 async function emptyApiKey(method) {
-    await expect(method()).rejects.toThrowError('Missing apiKey property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiKey property for private api request');
 }
 
 async function emptyApiSecret(method) {
-    await expect(method()).rejects.toThrowError('Missing apiSecret property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiSecret property for private api request');
 }
 
 describe('getOrder', () => {
@@ -85,7 +85,7 @@ describe('getOrder', () => {
     it('should throw error about id is required', async () => {
         const method = api.getOrder();
 
-        await expect(method).rejects.toThrowError('Order id is required for getOrder method.');
+        await expect(method).rejects.toThrow('Order id is required for getOrder method.');
     });
 
     it('should throw error from exchange (success: 0, error: \'some error\'', async () => {
@@ -100,7 +100,7 @@ describe('getOrder', () => {
 
         const method = api.getOrder(1234);
 
-        await expect(method).rejects.toThrowError(expected);
+        await expect(method).rejects.toThrow(expected);
     });
 
     it('should reject with connection error from request', async () => {
@@ -113,7 +113,7 @@ describe('getOrder', () => {
 
         mockRequest(false, source);
 
-        await expect(api.getOrder(123)).rejects.toThrowError(expected);
+        await expect(api.getOrder(123)).rejects.toThrow(expected);
     });
 
     it('should return correct order with status active', async () => {

@@ -19,11 +19,11 @@ function mockRequest(isResolve, response) {
 }
 
 async function emptyApiKey(method) {
-    await expect(method()).rejects.toThrowError('Missing apiKey property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiKey property for private api request');
 }
 
 async function emptyApiSecret(method) {
-    await expect(method()).rejects.toThrowError('Missing apiSecret property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiSecret property for private api request');
 }
 
 describe('getAccountInfoExtended', () => {
@@ -91,7 +91,7 @@ describe('getAccountInfoExtended', () => {
 
         mockRequest(false, source);
 
-        await expect(api.getAccountInfoExtended()).rejects.toThrowError(expected);
+        await expect(api.getAccountInfoExtended()).rejects.toThrow(expected);
     });
 
     it('should throw error from exchange (success: 0)', async () => {
@@ -104,6 +104,6 @@ describe('getAccountInfoExtended', () => {
 
         mockRequest(true, JSON.stringify(source));
 
-        await expect(api.getAccountInfoExtended()).rejects.toThrowError(expected);
+        await expect(api.getAccountInfoExtended()).rejects.toThrow(expected);
     });
 });

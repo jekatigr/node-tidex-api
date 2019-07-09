@@ -19,11 +19,11 @@ function mockRequest(isResolve, response) {
 }
 
 async function emptyApiKey(method) {
-    await expect(method()).rejects.toThrowError('Missing apiKey property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiKey property for private api request');
 }
 
 async function emptyApiSecret(method) {
-    await expect(method()).rejects.toThrowError('Missing apiSecret property for private api request');
+    await expect(method()).rejects.toThrow('Missing apiSecret property for private api request');
 }
 
 describe('limitOrder', () => {
@@ -68,14 +68,14 @@ describe('limitOrder', () => {
 
     it('should throw error about required symbol', async () => {
         const method = api.limitOrder('', 40000, 90, 'buy');
-        await expect(method).rejects.toThrowError('Symbol is required for limitOrder method.');
+        await expect(method).rejects.toThrow('Symbol is required for limitOrder method.');
     });
 
     it('should throw error about  doesn\'t exist such symbol', async () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('MER/WAVES', 4000, 90, 'buy');
-        await expect(method).rejects.toThrowError('Market with such symbol doesn\'t exist.');
+        await expect(method).rejects.toThrow('Market with such symbol doesn\'t exist.');
 
         api.getMarkets.mockRestore();
     });
@@ -84,7 +84,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 4000, 90, '');
-        await expect(method).rejects.toThrowError('Operation should be "buy" or "sell".');
+        await expect(method).rejects.toThrow('Operation should be "buy" or "sell".');
 
         api.getMarkets.mockRestore();
     });
@@ -93,7 +93,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', undefined, 90, 'sell');
-        await expect(method).rejects.toThrowError('Price is required for limitOrder method.');
+        await expect(method).rejects.toThrow('Price is required for limitOrder method.');
 
         api.getMarkets.mockRestore();
     });
@@ -102,7 +102,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 5, 90, 'sell');
-        await expect(method).rejects.toThrowError('Price should be less than \'3\' for LTC/BTC market.');
+        await expect(method).rejects.toThrow('Price should be less than \'3\' for LTC/BTC market.');
 
         api.getMarkets.mockRestore();
     });
@@ -111,7 +111,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 0.0007, 90, 'sell');
-        await expect(method).rejects.toThrowError('Price should be greater than \'0.2\' for LTC/BTC market.');
+        await expect(method).rejects.toThrow('Price should be greater than \'0.2\' for LTC/BTC market.');
 
         api.getMarkets.mockRestore();
     });
@@ -120,7 +120,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 1, undefined, 'sell');
-        await expect(method).rejects.toThrowError('Amount is required for limitOrder method.');
+        await expect(method).rejects.toThrow('Amount is required for limitOrder method.');
 
         api.getMarkets.mockRestore();
     });
@@ -129,7 +129,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 1, 2000000, 'sell');
-        await expect(method).rejects.toThrowError('Amount should be less than \'1000000\' for LTC/BTC market.');
+        await expect(method).rejects.toThrow('Amount should be less than \'1000000\' for LTC/BTC market.');
 
         api.getMarkets.mockRestore();
     });
@@ -138,7 +138,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 1, 0.003, 'sell');
-        await expect(method).rejects.toThrowError('Amount should be greater than \'0.1\' for LTC/BTC market.');
+        await expect(method).rejects.toThrow('Amount should be greater than \'0.1\' for LTC/BTC market.');
 
         api.getMarkets.mockRestore();
     });
@@ -147,7 +147,7 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarkets);
 
         const method = api.limitOrder('LTC/BTC', 2, 100, 'sell');
-        await expect(method).rejects.toThrowError('Total should be greater than \'250\' for LTC/BTC market. Current total: 200');
+        await expect(method).rejects.toThrow('Total should be greater than \'250\' for LTC/BTC market. Current total: 200');
 
         api.getMarkets.mockRestore();
     });
@@ -166,7 +166,7 @@ describe('limitOrder', () => {
 
         const method = api.limitOrder('LTC/BTC', 2, 200, 'sell');
 
-        await expect(method).rejects.toThrowError(expected);
+        await expect(method).rejects.toThrow(expected);
 
         api.getMarkets.mockRestore();
     });
@@ -249,6 +249,6 @@ describe('limitOrder', () => {
         api.getMarkets = jest.fn().mockReturnValue(sourceForGetMarket);
         mockRequest(false, source);
 
-        await expect(api.limitOrder('REM/ETH', 0.00000102, 39281.9405, 'buy')).rejects.toThrowError(expected);
+        await expect(api.limitOrder('REM/ETH', 0.00000102, 39281.9405, 'buy')).rejects.toThrow(expected);
     });
 });
